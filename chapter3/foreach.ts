@@ -23,4 +23,4 @@ const foreach = <T = any>(arr: T[], callback: (element: T, index?: number, array
   } while(k < len);
 };
 
-const foreachRes = foreach([1, 2, 3], (val) => console.log(val));
+foreach([1, 2, 3], (val) => console.log(val));
