@@ -121,10 +121,21 @@ export class DoublyLinkedList<T = any> {
       return this.tail as DoublyNode<T>;
     }
 
-    let current = this.head as DoublyNode<T>;
-    // 这里的i仅用作循环次数之用
-    for (let i = 0; i < index; i++) {
-      current = current.next as DoublyNode<T>;
+    if (index <= this.count / 2) {
+      let current = this.head as DoublyNode<T>;
+      // 这里的i仅用作循环次数之用
+      for (let i = 0; i < index; i++) {
+        current = current.next as DoublyNode<T>;
+      }
+
+      return current;
+    }
+
+    let current = this.tail as DoublyNode<T>;
+    let count = this.count - 1;
+    while(count > index) {
+      current = current.prev as DoublyNode<T>;
+      count--;
     }
 
     return current;
@@ -262,3 +273,4 @@ list1.insert('hello', 3);
 
 console.log(list1.toString());
 console.log('--------');
+console.log(list1.getElementAt(4)?.value);
