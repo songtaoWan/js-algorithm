@@ -2,7 +2,7 @@
  * 集合实现，只支持string | symbol
  */
 class MyselfSet {
-  items: Record<string | symbol, any>;
+  private items: Record<string | symbol, any>;
 
   constructor() {
     this.items = {};
@@ -39,6 +39,20 @@ class MyselfSet {
 
     this.items[element] = element;
   }
+
+  union(otherSet: MyselfSet) {
+    const unionSet = new MyselfSet();
+
+    this.values().forEach((val) => {
+      unionSet.add(val);
+    });
+
+    otherSet.values().forEach((val) => {
+      unionSet.add(val);
+    });
+
+    return unionSet;
+  }
 }
 
 const mySet = new MyselfSet();
@@ -46,5 +60,11 @@ mySet.add('1');
 mySet.add('set');
 mySet.add('del');
 
-console.log(mySet.values(), mySet.size());
+console.log(mySet.values(), mySet.size(), mySet);
 
+const oSet = new MyselfSet();
+oSet.add('w');
+oSet.add('s');
+oSet.add('t');
+
+console.log(mySet.union(oSet));
