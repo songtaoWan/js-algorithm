@@ -99,6 +99,18 @@ class MyselfSet {
 
     return diffSet;
   }
+
+  /**
+   * 传入集合是否是本集合的子集
+   * @param otherSet 
+   */
+  isChildSet(otherSet: MyselfSet) {
+    if (otherSet.size() > this.size()) {
+      return false;
+    }
+
+    return otherSet.values().every((val) => this.has(val));
+  }
 }
 
 const mySet = new MyselfSet();
@@ -110,5 +122,6 @@ mySet.add('del');
 
 const oSet = new MyselfSet();
 oSet.add('1');
+oSet.add('2');
 
-console.log(mySet.difference(oSet));
+console.log(mySet.isChildSet(oSet));
