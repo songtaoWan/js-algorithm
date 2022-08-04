@@ -1,8 +1,8 @@
 /**
- * 集合实现，只支持string | number | symbol
+ * 集合实现，只支持string | symbol
  */
 class MyselfSet {
-  items: Record<string | number | symbol, any>;
+  items: Record<string | symbol, any>;
 
   constructor() {
     this.items = {};
@@ -16,15 +16,15 @@ class MyselfSet {
     return Object.values(this.items).length;
   }
 
-  values(): (string | number | symbol)[] {
+  values(): (string | symbol)[] {
     return Object.values(this.items);
   }
 
-  has(element: string | number | symbol) {
+  has(element: string | symbol) {
     return Object.prototype.hasOwnProperty.call(this.items, element);
   }
 
-  delete(element: string | number | symbol) {
+  delete(element: string | symbol) {
     if (!this.has(element)) {
       return;
     }
@@ -32,7 +32,7 @@ class MyselfSet {
     delete this.items[element];
   }
 
-  add(element: string | number | symbol) {
+  add(element: string | symbol) {
     if (this.has(element)) {
       return;
     }
@@ -42,9 +42,9 @@ class MyselfSet {
 }
 
 const mySet = new MyselfSet();
-mySet.add(1);
+mySet.add('1');
 mySet.add('set');
-mySet.add('set');
+mySet.add('del');
 
 console.log(mySet.values(), mySet.size());
 
