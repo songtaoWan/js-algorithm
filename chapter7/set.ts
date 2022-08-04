@@ -82,17 +82,33 @@ class MyselfSet {
 
     return inset;
   }
+
+  /**
+   * 差集
+   * @param otherSet 
+   */
+  difference(otherSet: MyselfSet) {
+    const diffSet = new MyselfSet();
+
+    const values = this.values();
+    values.forEach((val) => {
+      if (!otherSet.has(val)) {
+        diffSet.add(val);
+      }
+    });
+
+    return diffSet;
+  }
 }
 
 const mySet = new MyselfSet();
 mySet.add('1');
-
+mySet.add('set');
+mySet.add('del');
 
 // console.log(mySet.values(), mySet.size(), mySet);
 
 const oSet = new MyselfSet();
 oSet.add('1');
-oSet.add('set');
-oSet.add('del');
 
-console.log(mySet.intersection(oSet));
+console.log(mySet.difference(oSet));
