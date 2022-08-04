@@ -61,11 +61,24 @@ class MyselfSet {
   intersection(otherSet: MyselfSet) {
     const inset = new MyselfSet();
 
-    this.values().forEach((val) => {
+    const values = this.values();
+    const len = values.length > otherSet.size() ? otherSet.size() : values.length;
+
+    if (!len) {
+      return inset;
+    }
+
+    for(let i = 0; i < values.length; i++) {
+      const val = values[i];
+
       if (otherSet.has(val)) {
         inset.add(val);
+
+        if (inset.size() === len) {
+          return inset;
+        }
       }
-    });
+    }
 
     return inset;
   }
@@ -73,14 +86,13 @@ class MyselfSet {
 
 const mySet = new MyselfSet();
 mySet.add('1');
-mySet.add('set');
-mySet.add('del');
+
 
 // console.log(mySet.values(), mySet.size(), mySet);
 
 const oSet = new MyselfSet();
 oSet.add('1');
-oSet.add('s');
-oSet.add('t');
+oSet.add('set');
+oSet.add('del');
 
 console.log(mySet.intersection(oSet));
