@@ -53,6 +53,22 @@ class MyselfSet {
 
     return unionSet;
   }
+
+  /**
+   * 交集
+   * @param otherSet 
+   */
+  intersection(otherSet: MyselfSet) {
+    const inset = new MyselfSet();
+
+    this.values().forEach((val) => {
+      if (otherSet.has(val)) {
+        inset.add(val);
+      }
+    });
+
+    return inset;
+  }
 }
 
 const mySet = new MyselfSet();
@@ -60,11 +76,11 @@ mySet.add('1');
 mySet.add('set');
 mySet.add('del');
 
-console.log(mySet.values(), mySet.size(), mySet);
+// console.log(mySet.values(), mySet.size(), mySet);
 
 const oSet = new MyselfSet();
-oSet.add('w');
+oSet.add('1');
 oSet.add('s');
 oSet.add('t');
 
-console.log(mySet.union(oSet));
+console.log(mySet.intersection(oSet));
