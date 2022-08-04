@@ -13,7 +13,7 @@ class MyselfSet {
   }
 
   size() {
-    return Object.values(this.items).length;
+    return Object.keys(this.items).length;
   }
 
   values(): (string | symbol)[] {
