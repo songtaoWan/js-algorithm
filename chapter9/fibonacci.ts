@@ -49,3 +49,30 @@ function fibonacciIterative(idx: number): number {
 
 const fi2 = fibonacciIterative(7);
 console.log(fi2);
+
+/**
+ * 记忆化斐波那契数
+ * @param n 位置
+ * @returns 
+ */
+function fibonacciMemoization(n: number): number {
+  if (n < 1) {
+    return 0;
+  }
+
+  n = n | 0;
+  const arr = [0, 1];
+  const fibonacci = (n: number): number => {
+    if (arr[n] != undefined) {
+      return arr[n];
+    }
+
+    return arr[n] = fibonacci(n - 1) + fibonacci(n - 2);
+  };
+
+  return fibonacci(n);
+}
+
+const fi3 = fibonacciMemoization(8);
+console.log(fi3);
+
