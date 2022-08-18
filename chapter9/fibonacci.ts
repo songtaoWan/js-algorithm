@@ -5,7 +5,7 @@
 /**
  * 递归求斐波那契数
  * @param index 位置
- * @returns 
+ * @returns
  */
 function fibonacciRecursion(index: number): number {
   if (index < 1) {
@@ -26,7 +26,7 @@ console.log(fi1);
 /**
  * 动态规划求斐波那契数
  * @param idx 位置
- * @returns 
+ * @returns
  */
 function fibonacciIterative(idx: number): number {
   if (idx < 1) {
@@ -38,13 +38,13 @@ function fibonacciIterative(idx: number): number {
     return 1;
   }
 
-  let fibN1 = 1;
-  let fibN2 = 1;
-  for(let i = 3; i <= idx; i++) {
-    [fibN1, fibN2] = [fibN2, fibN1 + fibN2];
+  const arr = [1, 1];
+  for (let i = 3; i <= idx; i++) {
+    arr.push(arr[0] + arr[1]);
+    arr.shift();
   }
 
-  return fibN2;
+  return arr[1];
 }
 
 const fi2 = fibonacciIterative(7);
@@ -53,7 +53,7 @@ console.log(fi2);
 /**
  * 记忆化斐波那契数
  * @param n 位置
- * @returns 
+ * @returns
  */
 function fibonacciMemoization(n: number): number {
   if (n < 1) {
@@ -67,7 +67,7 @@ function fibonacciMemoization(n: number): number {
       return arr[n];
     }
 
-    return arr[n] = fibonacci(n - 1) + fibonacci(n - 2);
+    return (arr[n] = fibonacci(n - 1) + fibonacci(n - 2));
   };
 
   return fibonacci(n);
@@ -75,4 +75,3 @@ function fibonacciMemoization(n: number): number {
 
 const fi3 = fibonacciMemoization(8);
 console.log(fi3);
-
