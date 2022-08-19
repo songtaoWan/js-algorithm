@@ -9,8 +9,8 @@
   <body>
     <script>
       /**
-       * 递归求斐波那契数(chrome最小占用内存大约292字节，最大占用内存2272字节)
-       * 
+       * 递归求斐波那契数(chrome最小占用内存大约292字节，最大占用内存约2272字节)
+       * 执行速度很慢，但容易理解
        * @param index 位置
        * @returns
        */
@@ -26,12 +26,13 @@
 
         return fibonacciRecursion(index - 1) + fibonacciRecursion(index - 2);
       }
-      fibonacciRecursion(40);
+      // fibonacciRecursion(40);
 
       /**
        * 动态规划求斐波那契数
-       * 该方法最小占用内存384字节，最大占用1380字节，chrome下
+       * 该方法最小占用内存384字节，最大占用约1380字节，chrome下
        * 使用数组变量替代数字变量保存数据后，该方法内存占用大大减少
+       * 执行速度相当的快，但没有递归简单易于理解
        * @param idx 位置
        * @returns
        */
@@ -53,10 +54,11 @@
 
         return arr[1];
       }
-      fibonacciIterative(1);
+      // fibonacciIterative(1);
 
       /**
-       * 记忆化斐波那契数(chrome最小占用内存大约656字节，最大占用内存1624字节)
+       * 记忆化斐波那契数(chrome最小占用内存大约656字节，最大占用内存约1624字节)
+       * 执行速度比迭代版慢一点点，代码比递归复杂一点
        * @param n 位置
        * @returns
        */
@@ -77,8 +79,26 @@
 
         return fibonacci(n);
       }
+      // fibonacciMemoization(10);
 
-      fibonacciMemoization(10);
+      function timeline(fn, n = 30, loop = 10) {
+        const beginTime = performance.now();
+
+        for(let i = 0; i < loop; i++) {
+          fn(n);
+        }
+
+        return performance.now() - beginTime;
+      }
+
+      const times1 = timeline(fibonacciRecursion, 35, 100);
+      document.body.innerHTML = `<p>fibonacciRecursion(35) 执行100次耗时：${times1.toFixed(3)}毫秒</p>`;
+
+      const times2 = timeline(fibonacciIterative, 35, 10000);
+      document.body.innerHTML += `<p>fibonacciIterative(35) 执行10000次耗时：${times2.toFixed(3)}毫秒</p>`;
+
+      const times3 = timeline(fibonacciMemoization, 35, 10000);
+      document.body.innerHTML += `<p>fibonacciMemoization(35) 执行10000次耗时：${times3.toFixed(3)}毫秒</p>`;
     </script>
   </body>
 </html>
