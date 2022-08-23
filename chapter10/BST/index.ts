@@ -51,6 +51,33 @@ class BinarySearchTree<T = unknown> {
 
     insertNode(this.root as Node<T>, key);
   }
+
+  search(key: T) {
+    if (this.root === null) {
+      return undefined;
+    }
+
+    const searchNode = (node: Node<T>, value: T): Node<T> | undefined => {
+      if (node.key === value) {
+        return node;
+      }
+
+      let nextNode: Node<T> | null = null;
+      if (this.compareFn(value, node.key)) {
+        nextNode = node.right as Node<T>;
+      } else {
+        nextNode = node.left as Node<T>;
+      }
+
+      if (nextNode === null) {
+        return undefined;
+      }
+
+      return searchNode(nextNode, value);
+    };
+
+    return searchNode(this.root, key);
+  }
 }
 
 // const tree = new BinarySearchTree<number>();
@@ -58,4 +85,8 @@ class BinarySearchTree<T = unknown> {
 // tree.insert(4);
 // tree.insert(12);
 // tree.insert(3);
-// console.log(tree, tree.root);
+// console.log(tree.root);
+
+// const res = tree.search(120);
+// console.log(res);
+
