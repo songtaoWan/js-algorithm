@@ -85,7 +85,10 @@ class BinarySearchTree<T = unknown> {
       return;
     }
 
-    const inOrderTraverseNode = (node: Node<T> | null, callback: (key: T) => void) => {
+    const inOrderTraverseNode = (
+      node: Node<T> | null,
+      callback: (key: T) => void
+    ) => {
       if (node === null) {
         return;
       }
@@ -97,6 +100,31 @@ class BinarySearchTree<T = unknown> {
 
     inOrderTraverseNode(this.root, callback);
   }
+
+  /**
+   * 先序遍历：访问根节点 => 遍历左子树 => 遍历右子树
+   * @param callback 需要对遍历到的节点的键进行的操作
+   */
+  preOrderTraverse(callback: (key: T) => void = (key) => console.log(key)) {
+    if (this.root === null) {
+      return;
+    }
+
+    const preOrderTraverseNode = (
+      node: Node<T> | null,
+      callback: (key: T) => void
+    ) => {
+      if (node === null) {
+        return;
+      }
+
+      callback(node.key);
+      preOrderTraverseNode(node.left as Node<T>, callback);
+      preOrderTraverseNode(node.right as Node<T>, callback);
+    };
+
+    preOrderTraverseNode(this.root, callback);
+  }
 }
 
 const tree = new BinarySearchTree<number>();
@@ -105,5 +133,4 @@ tree.insert(4);
 tree.insert(12);
 tree.insert(3);
 console.log(tree);
-tree.inOrderTraverse();
-
+tree.preOrderTraverse();
