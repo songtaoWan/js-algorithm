@@ -34,10 +34,7 @@ class BinarySearchTree<T = unknown> {
 
         // 右节点不为空，保存当前右节点，继续查找其子节点
         nextNode = node.right as Node<T>;
-      }
-
-      // 小的值存入左节点
-      if (nextNode === null) {
+      } else {
         if (node.left === null) {
           node.left = new Node(value);
           return;
