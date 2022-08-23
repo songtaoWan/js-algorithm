@@ -150,6 +150,19 @@ class BinarySearchTree<T = unknown> {
 
     postOrderTraverseNode(this.root, callback);
   }
+
+  min() {
+    if (this.root === null) {
+      return undefined;
+    }
+
+    let node: Node<T> | null = this.root;
+    while(node?.left !== null) {
+      node = node?.left as (Node<T> | null);
+    }
+
+    return node.key;
+  }
 }
 
 const tree = new BinarySearchTree<number>();
@@ -157,5 +170,4 @@ tree.insert(10);
 tree.insert(4);
 tree.insert(12);
 tree.insert(3);
-console.log(tree);
-tree.postOrderTraverse();
+console.log(tree, tree.min());
