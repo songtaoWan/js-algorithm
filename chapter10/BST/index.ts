@@ -125,6 +125,31 @@ class BinarySearchTree<T = unknown> {
 
     preOrderTraverseNode(this.root, callback);
   }
+
+  /**
+   * 后序遍历：遍历左子树 => 遍历右子树 => 访问根节点
+   * @param callback 需要对遍历到的节点的键进行的操作
+   */
+  postOrderTraverse(callback: (key: T) => void = (key) => console.log(key)) {
+    if (this.root === null) {
+      return;
+    }
+
+    const postOrderTraverseNode = (
+      node: Node<T> | null,
+      callback: (key: T) => void
+    ) => {
+      if (node === null) {
+        return;
+      }
+
+      postOrderTraverseNode(node.left as Node<T>, callback);
+      postOrderTraverseNode(node.right as Node<T>, callback);
+      callback(node.key);
+    };
+
+    postOrderTraverseNode(this.root, callback);
+  }
 }
 
 const tree = new BinarySearchTree<number>();
@@ -133,4 +158,4 @@ tree.insert(4);
 tree.insert(12);
 tree.insert(3);
 console.log(tree);
-tree.preOrderTraverse();
+tree.postOrderTraverse();
