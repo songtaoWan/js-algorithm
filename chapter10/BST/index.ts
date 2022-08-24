@@ -176,6 +176,72 @@ class BinarySearchTree<T = unknown> {
 
     return node.key;
   }
+
+  getAllNodes() {
+    const treeNodes: (T | string)[][] = [];
+    if (this.root === null) {
+      return treeNodes;
+    }
+
+    const traverse = (node: Node<T> | null, layer = 0) => {
+      if (node === null) {
+        if (Array.isArray(treeNodes[layer])) {
+          treeNodes[layer].push('');
+        } else {
+          treeNodes[layer] = [''];
+        }
+        return;
+      }
+
+      if (Array.isArray(treeNodes[layer])) {
+        treeNodes[layer].push(node.key);
+      } else {
+        treeNodes[layer] = [node.key];
+      }
+
+      layer++;
+      traverse(node.left as Node<T>, layer);
+      traverse(node.right as Node<T>, layer);
+    };
+    traverse(this.root);
+    treeNodes.splice(treeNodes.length - 1, 1);
+
+    return treeNodes;
+  }
+
+  remove(key: T) {
+    const node = this.search(key);
+    if (!node) {
+      return;
+    }
+  }
+
+  toString(transformFn = (key: T | string) => `${key}`) {
+    const nodes = this.getAllNodes();
+    if (nodes.length === 0) {
+      return '';
+    }
+
+    const spacing = 2;
+    const maxSpaceNum = (2 ** (nodes.length - 1) + 1) * spacing;
+
+    return nodes.map((item, idx) => {
+      const arr = item.map((value, key) => {
+        if (key === 0 && value === '') {
+          return '  ';
+        }
+
+        return transformFn(value);
+      });
+
+      const splitNum = 2 ** idx + 1;
+      const gaps = new Array(Math.ceil(maxSpaceNum / splitNum));
+      gaps.fill(' ');
+      const gap = gaps.join('');
+
+      return `${gap}${arr.join(gap)}${gap}\n`;
+    }).join('');
+  }
 }
 
 const tree = new BinarySearchTree<number>();
@@ -184,4 +250,13 @@ tree.insert(4);
 tree.insert(12);
 tree.insert(3);
 tree.insert(11);
-console.log(tree, tree.min(), tree.max());
+tree.insert(6);
+tree.insert(23);
+tree.insert(33);
+tree.insert(1);
+tree.insert(13);
+tree.insert(2);
+console.log(tree);
+console.log(tree.toString());
+
+// tree.postOrderTraverse()
