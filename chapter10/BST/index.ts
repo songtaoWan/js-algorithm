@@ -163,6 +163,19 @@ class BinarySearchTree<T = unknown> {
 
     return node.key;
   }
+
+  max() {
+    if (this.root === null) {
+      return undefined;
+    }
+
+    let node: Node<T> | null = this.root;
+    while(node?.right !== null) {
+      node = node?.right as (Node<T> | null);
+    }
+
+    return node.key;
+  }
 }
 
 const tree = new BinarySearchTree<number>();
@@ -170,4 +183,5 @@ tree.insert(10);
 tree.insert(4);
 tree.insert(12);
 tree.insert(3);
-console.log(tree, tree.min());
+tree.insert(11);
+console.log(tree, tree.min(), tree.max());
