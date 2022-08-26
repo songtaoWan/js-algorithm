@@ -157,8 +157,8 @@ class BinarySearchTree<T = unknown> {
     }
 
     let node: Node<T> | null = this.root;
-    while(node?.left !== null) {
-      node = node?.left as (Node<T> | null);
+    while (node?.left !== null) {
+      node = node?.left as Node<T> | null;
     }
 
     return node.key;
@@ -170,16 +170,21 @@ class BinarySearchTree<T = unknown> {
     }
 
     let node: Node<T> | null = this.root;
-    while(node?.right !== null) {
-      node = node?.right as (Node<T> | null);
+    while (node?.right !== null) {
+      node = node?.right as Node<T> | null;
     }
 
     return node.key;
   }
 
-  getAllNodes() {
+  /**
+   * 获取某个节点下的所有节点的键，默认包含自身
+   * @param begNode 开始节点
+   * @returns 返回一个二维数组，索引代表层级，每一层都是全部的节点，不存在用空字符串表示
+   */
+  getAllNodes(begNode: Node<T> | null = this.root) {
     const treeNodes: (T | string)[][] = [];
-    if (this.root === null) {
+    if (begNode === null) {
       return treeNodes;
     }
 
@@ -203,18 +208,28 @@ class BinarySearchTree<T = unknown> {
       traverse(node.left as Node<T>, layer);
       traverse(node.right as Node<T>, layer);
     };
-    traverse(this.root);
+    traverse(begNode);
     treeNodes.splice(treeNodes.length - 1, 1);
+
+    // 处理每层数据量不对的问题
+    treeNodes.forEach((item, index) => {
+      if (item.length === Math.pow(2, index)) {
+        return;
+      }
+
+      treeNodes[index - 1].forEach((val, key) => {
+        if (val !== '') {
+          return;
+        }
+
+        treeNodes[index].splice(key + 1, 0, '', '');
+      });
+    });
 
     return treeNodes;
   }
 
-  remove(key: T) {
-    const node = this.search(key);
-    if (!node) {
-      return;
-    }
-  }
+
 
   toString(transformFn = (key: T | string) => `${key}`) {
     const nodes = this.getAllNodes();
@@ -222,25 +237,27 @@ class BinarySearchTree<T = unknown> {
       return '';
     }
 
-    const spacing = 2;
+    const spacing = 3;
     const maxSpaceNum = (2 ** (nodes.length - 1) + 1) * spacing;
 
-    return nodes.map((item, idx) => {
-      const arr = item.map((value, key) => {
-        if (key === 0 && value === '') {
-          return '  ';
-        }
+    return nodes
+      .map((item, idx) => {
+        const arr = item.map((value, key) => {
+          if (key === 0 && value === '') {
+            return '  ';
+          }
 
-        return transformFn(value);
-      });
+          return transformFn(value);
+        });
 
-      const splitNum = 2 ** idx + 1;
-      const gaps = new Array(Math.ceil(maxSpaceNum / splitNum));
-      gaps.fill(' ');
-      const gap = gaps.join('');
+        const splitNum = 2 ** idx + 1;
+        const gaps = new Array(Math.ceil(maxSpaceNum / splitNum));
+        gaps.fill(' ');
+        const gap = gaps.join('');
 
-      return `${gap}${arr.join(gap)}${gap}\n`;
-    }).join('');
+        return `${gap}${arr.join(gap)}${gap}\n`;
+      })
+      .join('');
   }
 }
 
@@ -256,7 +273,9 @@ tree.insert(33);
 tree.insert(1);
 tree.insert(13);
 tree.insert(2);
-console.log(tree);
+// console.log(tree);
 console.log(tree.toString());
-
+// tree.remove(12);
+// console.log(tree.toString());
+// console.log(tree.getAllNodes());
 // tree.postOrderTraverse()
