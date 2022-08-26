@@ -229,7 +229,93 @@ class BinarySearchTree<T = unknown> {
     return treeNodes;
   }
 
+  remove(key: T) {
+    const node = this.search(key);
+    if (!node) {
+      return;
+    }
 
+    // 移除根节点
+    if (this.root?.key === key) {
+      if (node.left === null && node.right === null) {
+        this.root = null;
+        return;
+      }
+
+      if (node.left !== null) {
+        this.root = node.left as Node<T>;
+
+        if (node.right === null) {
+          return;
+        }
+
+        if (this.root.right !== null) {
+          const nodes = this.getAllNodes(this.root.right as Node<T>).flat().filter((val) => val !== '');
+          this.root.right = node.right;
+
+          nodes.forEach((item) => {
+            this.insert(item as T);
+          });
+          return;
+        }
+
+        this.root.right = node.right;
+        return;
+      }
+
+      this.root = node.right as Node<T>;
+    }
+
+    const getParentNode = (node: Node<T>, value: T): Node<T> | undefined => {
+      if (node === null) {
+        return;
+      }
+
+      if (node?.left?.key === value || node?.right?.key === value) {
+        return node;
+      }
+
+      let nextNode: Node<T> | null = null;
+      if (this.compareFn(value, node.key)) {
+        nextNode = node.right as Node<T>;
+      } else {
+        nextNode = node.left as Node<T>;
+      }
+
+      if (nextNode === null) {
+        return undefined;
+      }
+
+      return getParentNode(nextNode, value);
+    };
+    const parentNode = getParentNode(this.root as Node<T>, key);
+
+    if (parentNode?.left?.key === key) {
+      parentNode.left = node.left;
+
+      if (node.right !== null) {
+        const nodes = this.getAllNodes(node.right as Node<T>).flat().filter((val) => val !== '');
+        nodes.forEach((item) => {
+          this.insert(item as T);
+        });
+      }
+      
+      return;
+    }
+
+    if (parentNode?.right?.key === key) {
+      parentNode.right = node.right;
+
+      if (node.left !== null) {
+        const nodes = this.getAllNodes(node.left as Node<T>).flat().filter((val) => val !== '');
+        nodes.forEach((item) => {
+          this.insert(item as T);
+        });
+      }
+
+      return;
+    }
+  }
 
   toString(transformFn = (key: T | string) => `${key}`) {
     const nodes = this.getAllNodes();
