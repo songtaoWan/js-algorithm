@@ -157,16 +157,20 @@ class BinarySearchTree<T = unknown> {
     postOrderTraverseNode(this.root, callback);
   }
 
+  private minNode(node: Node<T>) {
+    while (node?.left !== null) {
+      node = node?.left as Node<T>;
+    }
+
+    return node;
+  }
+
   min() {
     if (this.root === null) {
       return undefined;
     }
 
-    let node: Node<T> | null = this.root;
-    while (node?.left !== null) {
-      node = node?.left as Node<T> | null;
-    }
-
+    const node = this.minNode(this.root);
     return node.key;
   }
 
@@ -236,15 +240,37 @@ class BinarySearchTree<T = unknown> {
   }
 
   remove(key: T) {
-    // const removeNode = (node: Node<T> | null, value: T): Node<T> | null => {
-    //   if (node === null) {
-    //     return null;
-    //   }
+    const removeNode = (node: Node<T> | null, value: T): Node<T> | null => {
+      if (node === null) {
+        return null;
+      }
 
-    //   const delNode = this.searchNode(node, value);
-    // };
+      if (node.key === value) {
+        if (node.left === null && node.right === null) {
+          return null;
+        }
 
-    // this.root = removeNode(this.root, key);
+        if (node.left === null) {
+          return node.right as Node<T>;
+        }
+
+        if (node.right === null) {
+          return node.left as Node<T>;
+        }
+
+
+      }
+
+      if (this.compareFn(value, node.key)) {
+        node.right = removeNode(node.right as Node<T>, value);
+      } else {
+        node.left = removeNode(node.left as Node<T>, value);
+      }
+
+      return node;
+    };
+
+    this.root = removeNode(this.root, key);
   }
 
   toString(transformFn = (key: T | string) => `${key}`) {
@@ -304,6 +330,8 @@ tree.insert(25);
 tree.insert(6);
 // console.log(tree);
 console.log(tree.toString());
+// console.log(tree.min());
+
 // tree.remove(12);
 // console.log(tree.toString());
 // console.log(tree.getAllNodes());
