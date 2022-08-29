@@ -15,6 +15,31 @@ class BinarySearchTree<T = unknown> {
     this.compareFn = compareFn;
   }
 
+  /**
+   * 搜索节点
+   * @param node 开始节点
+   * @param value 需要搜索的节点的值
+   * @returns 
+   */
+  private searchNode (node: Node<T>, value: T): Node<T> | null {
+    if (node.key === value) {
+      return node;
+    }
+
+    let nextNode: Node<T> | null = null;
+    if (this.compareFn(value, node.key)) {
+      nextNode = node.right as Node<T>;
+    } else {
+      nextNode = node.left as Node<T>;
+    }
+
+    if (nextNode === null) {
+      return null;
+    }
+
+    return this.searchNode(nextNode, value);
+  };
+
   insert(key: T) {
     if (this.root === null) {
       this.root = new Node(key);
@@ -51,29 +76,10 @@ class BinarySearchTree<T = unknown> {
 
   search(key: T) {
     if (this.root === null) {
-      return undefined;
+      return null;
     }
 
-    const searchNode = (node: Node<T>, value: T): Node<T> | undefined => {
-      if (node.key === value) {
-        return node;
-      }
-
-      let nextNode: Node<T> | null = null;
-      if (this.compareFn(value, node.key)) {
-        nextNode = node.right as Node<T>;
-      } else {
-        nextNode = node.left as Node<T>;
-      }
-
-      if (nextNode === null) {
-        return undefined;
-      }
-
-      return searchNode(nextNode, value);
-    };
-
-    return searchNode(this.root, key);
+    return this.searchNode(this.root, key);
   }
 
   /**
@@ -230,91 +236,15 @@ class BinarySearchTree<T = unknown> {
   }
 
   remove(key: T) {
-    const node = this.search(key);
-    if (!node) {
-      return;
-    }
+    // const removeNode = (node: Node<T> | null, value: T): Node<T> | null => {
+    //   if (node === null) {
+    //     return null;
+    //   }
 
-    // 移除根节点
-    if (this.root?.key === key) {
-      if (node.left === null && node.right === null) {
-        this.root = null;
-        return;
-      }
+    //   const delNode = this.searchNode(node, value);
+    // };
 
-      if (node.left !== null) {
-        this.root = node.left as Node<T>;
-
-        if (node.right === null) {
-          return;
-        }
-
-        if (this.root.right !== null) {
-          const nodes = this.getAllNodes(this.root.right as Node<T>).flat().filter((val) => val !== '');
-          this.root.right = node.right;
-
-          nodes.forEach((item) => {
-            this.insert(item as T);
-          });
-          return;
-        }
-
-        this.root.right = node.right;
-        return;
-      }
-
-      this.root = node.right as Node<T>;
-    }
-
-    const getParentNode = (node: Node<T>, value: T): Node<T> | undefined => {
-      if (node === null) {
-        return;
-      }
-
-      if (node?.left?.key === value || node?.right?.key === value) {
-        return node;
-      }
-
-      let nextNode: Node<T> | null = null;
-      if (this.compareFn(value, node.key)) {
-        nextNode = node.right as Node<T>;
-      } else {
-        nextNode = node.left as Node<T>;
-      }
-
-      if (nextNode === null) {
-        return undefined;
-      }
-
-      return getParentNode(nextNode, value);
-    };
-    const parentNode = getParentNode(this.root as Node<T>, key);
-
-    if (parentNode?.left?.key === key) {
-      parentNode.left = node.left;
-
-      if (node.right !== null) {
-        const nodes = this.getAllNodes(node.right as Node<T>).flat().filter((val) => val !== '');
-        nodes.forEach((item) => {
-          this.insert(item as T);
-        });
-      }
-      
-      return;
-    }
-
-    if (parentNode?.right?.key === key) {
-      parentNode.right = node.right;
-
-      if (node.left !== null) {
-        const nodes = this.getAllNodes(node.left as Node<T>).flat().filter((val) => val !== '');
-        nodes.forEach((item) => {
-          this.insert(item as T);
-        });
-      }
-
-      return;
-    }
+    // this.root = removeNode(this.root, key);
   }
 
   toString(transformFn = (key: T | string) => `${key}`) {
@@ -323,21 +253,30 @@ class BinarySearchTree<T = unknown> {
       return '';
     }
 
-    const spacing = 3;
+    const spacing = 4;
     const maxSpaceNum = (2 ** (nodes.length - 1) + 1) * spacing;
+    const maxStrLen = nodes[nodes.length - 1].reduce((a: number, b) => {
+      const bLen = transformFn(b).length;
+
+      return a + bLen;
+    }, 0);
 
     return nodes
       .map((item, idx) => {
+        let len = 0;
         const arr = item.map((value, key) => {
-          if (key === 0 && value === '') {
-            return '  ';
+          if (value === '') {
+            len += 1;
+            return ' ';
           }
 
-          return transformFn(value);
+          const val = transformFn(value);
+          len += val.length;
+          return val;
         });
 
         const splitNum = 2 ** idx + 1;
-        const gaps = new Array(Math.ceil(maxSpaceNum / splitNum));
+        const gaps = new Array(Math.ceil((maxSpaceNum + maxStrLen - len) / splitNum));
         gaps.fill(' ');
         const gap = gaps.join('');
 
@@ -348,17 +287,21 @@ class BinarySearchTree<T = unknown> {
 }
 
 const tree = new BinarySearchTree<number>();
-tree.insert(10);
-tree.insert(4);
-tree.insert(12);
-tree.insert(3);
 tree.insert(11);
-tree.insert(6);
-tree.insert(23);
-tree.insert(33);
-tree.insert(1);
+tree.insert(7);
+tree.insert(15);
+tree.insert(5);
+tree.insert(3);
+tree.insert(9);
+tree.insert(8);
+tree.insert(10);
 tree.insert(13);
-tree.insert(2);
+tree.insert(12);
+tree.insert(14);
+tree.insert(20);
+tree.insert(18);
+tree.insert(25);
+tree.insert(6);
 // console.log(tree);
 console.log(tree.toString());
 // tree.remove(12);
