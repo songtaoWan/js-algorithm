@@ -258,7 +258,11 @@ class BinarySearchTree<T = unknown> {
           return node.left as Node<T>;
         }
 
-
+        // 左右节点都存在，则将右子节点的最小节点移动到删除的节点的位置
+        const minVal = this.minNode(node.right as Node<T>).key;
+        node.key = minVal;
+        node.right = removeNode(node.right as Node<T>, minVal);
+        return node;
       }
 
       if (this.compareFn(value, node.key)) {
@@ -330,9 +334,11 @@ tree.insert(25);
 tree.insert(6);
 // console.log(tree);
 console.log(tree.toString());
+// console.log(tree.remove(11));
+
 // console.log(tree.min());
 
-// tree.remove(12);
-// console.log(tree.toString());
+tree.remove(15);
+console.log(tree.toString());
 // console.log(tree.getAllNodes());
 // tree.postOrderTraverse()
