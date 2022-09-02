@@ -182,7 +182,7 @@ class AVLTree<T = unknown> {
   }
 
   /**
-   * 向左的单旋转：右侧子节点的高度大于左侧子节点的高度且右侧子节点也是平衡的或左侧较重的
+   * 向左的单旋转：右侧子节点的高度大于左侧子节点的高度且右侧子节点也是平衡的或右侧较重的
    * @param node
    * @returns
    */
@@ -276,23 +276,6 @@ class AVLTree<T = unknown> {
     }
 
     this.root = this.removeNode(this.root as Node<T>, key);
+    this.root = this.balanceTree(this.root as Node<T>);
   }
 }
-
-const tree = new AVLTree();
-tree.insert(50);
-tree.insert(30);
-tree.insert(70);
-tree.insert(60);
-tree.insert(80);
-console.log(tree.root);
-tree.insert(65);
-console.log('-----------------');
-
-console.log(tree.root);
-// tree.insert(3);
-
-// console.log(tree.root);
-// tree.remove(30);
-// console.log(tree.getBalanceFactor(tree.root));
-// tree.postOrderTraverse()
