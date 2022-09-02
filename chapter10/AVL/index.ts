@@ -116,9 +116,9 @@ class AVLTree<T = unknown> {
 
   /**
    * 平衡传入的树结构并返回
-   * @param node 
+   * @param node
    * @param key 插入节点的值，可以用来判断子树是哪边较重
-   * @returns 
+   * @returns
    */
   private balanceTree(node: Node<T>, key?: T) {
     const balanceFactor = this.getBalanceFactor(node);
@@ -296,7 +296,7 @@ class AVLTree<T = unknown> {
 
   private maxNode(node: Node<T>) {
     let maxNode = node;
-    while(maxNode.right !== null) {
+    while (maxNode.right !== null) {
       maxNode = maxNode.right as Node<T>;
     }
 
@@ -310,6 +310,27 @@ class AVLTree<T = unknown> {
 
     return this.maxNode(this.root).key;
   }
+
+  private searchNode(node: Node<T> | null, key: T): Node<T> | null {
+    if (node === null) {
+      return null;
+    }
+
+    let nextNode = node;
+    if (this.compareFn(key, node.key) === 1) {
+      nextNode = node.right as Node<T>;
+    } else if (this.compareFn(key, node.key) === -1) {
+      nextNode = node.left as Node<T>;
+    } else {
+      return node;
+    }
+
+    return this.searchNode(nextNode, key);
+  }
+
+  search(key: T) {
+    return this.searchNode(this.root, key);
+  }
 }
 
 const tree = new AVLTree();
@@ -321,3 +342,4 @@ tree.insert(40);
 
 console.log(tree.min());
 console.log(tree.max());
+console.log(tree.search(30));
