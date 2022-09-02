@@ -1,7 +1,7 @@
 import Node from '../node';
 
 class AVLTree<T = unknown> {
-  root: null | Node<T>;
+  private root: null | Node<T>;
   private compareFn: (a: T, b: T) => 1 | 0 | -1;
 
   constructor(compareFn?: (a: T, b: T) => 1 | 0 | -1) {
@@ -25,111 +25,6 @@ class AVLTree<T = unknown> {
     }
 
     return -1;
-  }
-
-  private insertNode(node: Node<T>, key: T): void {
-    let nextNode: Node<T> | null = null;
-
-    // 需要插入的节点的值大于当前节点的值，较大的值总数保存在二叉树的右节点
-    if (this.compareFn(key, node.key) === 1) {
-      if (node.right === null) {
-        node.right = new Node(key);
-        return;
-      }
-
-      nextNode = node.right as Node<T>;
-    } else {
-      if (node.left === null) {
-        node.left = new Node(key);
-        return;
-      }
-
-      nextNode = node.left as Node<T>;
-    }
-
-    return this.insertNode(nextNode, key);
-  }
-
-  private minNode(node: Node<T>) {
-    let min: Node<T> = node;
-    while (min?.left !== null) {
-      min = min?.left as Node<T>;
-    }
-
-    return min;
-  }
-
-  private removeNode(node: Node<T>, key: T): Node<T> | null {
-    if (this.compareFn(key, node.key) === 1) {
-      node.right = this.removeNode(node.right as Node<T>, key);
-      return node;
-    }
-
-    if (this.compareFn(key, node.key) === -1) {
-      node.left = this.removeNode(node.left as Node<T>, key);
-      return node;
-    }
-
-    if (node.left === null && node.right === null) {
-      return null;
-    }
-
-    if (node.right === null) {
-      return node.left as Node<T>;
-    }
-
-    if (node.left === null) {
-      return node.right as Node<T>;
-    }
-
-    // 左右节点都存在，则将右子节点的最小节点移动到删除的节点的位置
-    const right = node.right as Node<T>;
-    const min = this.minNode(right).key;
-    node.key = min;
-    node.right = this.removeNode(right, min);
-    return node;
-  }
-
-  preOrderTraverse(callback: (key: T) => void = (key) => console.log(key)) {
-    const preTraverse = (node: Node<T> | null) => {
-      if (node === null) {
-        return;
-      }
-
-      callback(node.key);
-      preTraverse(node.left as Node<T>);
-      preTraverse(node.right as Node<T>);
-    };
-
-    preTraverse(this.root);
-  }
-
-  inOrderTraverse(callback: (key: T) => void = (key) => console.log(key)) {
-    const inTraverse = (node: Node<T> | null) => {
-      if (node === null) {
-        return;
-      }
-
-      inTraverse(node.left as Node<T>);
-      callback(node.key);
-      inTraverse(node.right as Node<T>);
-    };
-
-    inTraverse(this.root);
-  }
-
-  postOrderTraverse(callback: (key: T) => void = (key) => console.log(key)) {
-    const postTraverse = (node: Node<T> | null) => {
-      if (node === null) {
-        return;
-      }
-
-      postTraverse(node.left as Node<T>);
-      postTraverse(node.right as Node<T>);
-      callback(node.key);
-    };
-
-    postTraverse(this.root);
   }
 
   getNodeHeight(node: Node<T> | null) {
@@ -219,6 +114,12 @@ class AVLTree<T = unknown> {
     return this.rotationRR(node);
   }
 
+  /**
+   * 平衡传入的树结构并返回
+   * @param node 
+   * @param key 插入节点的值，可以用来判断子树是哪边较重
+   * @returns 
+   */
   private balanceTree(node: Node<T>, key?: T) {
     const balanceFactor = this.getBalanceFactor(node);
     // 左右子树高度差不超过1，平衡
@@ -260,6 +161,69 @@ class AVLTree<T = unknown> {
     return this.rotationRR(node);
   }
 
+  private insertNode(node: Node<T>, key: T): void {
+    let nextNode: Node<T> | null = null;
+
+    // 需要插入的节点的值大于当前节点的值，较大的值总数保存在二叉树的右节点
+    if (this.compareFn(key, node.key) === 1) {
+      if (node.right === null) {
+        node.right = new Node(key);
+        return;
+      }
+
+      nextNode = node.right as Node<T>;
+    } else {
+      if (node.left === null) {
+        node.left = new Node(key);
+        return;
+      }
+
+      nextNode = node.left as Node<T>;
+    }
+
+    return this.insertNode(nextNode, key);
+  }
+
+  private minNode(node: Node<T>) {
+    let min: Node<T> = node;
+    while (min?.left !== null) {
+      min = min?.left as Node<T>;
+    }
+
+    return min;
+  }
+
+  private removeNode(node: Node<T>, key: T): Node<T> | null {
+    if (this.compareFn(key, node.key) === 1) {
+      node.right = this.removeNode(node.right as Node<T>, key);
+      return node;
+    }
+
+    if (this.compareFn(key, node.key) === -1) {
+      node.left = this.removeNode(node.left as Node<T>, key);
+      return node;
+    }
+
+    if (node.left === null && node.right === null) {
+      return null;
+    }
+
+    if (node.right === null) {
+      return node.left as Node<T>;
+    }
+
+    if (node.left === null) {
+      return node.right as Node<T>;
+    }
+
+    // 左右节点都存在，则将右子节点的最小节点移动到删除的节点的位置
+    const right = node.right as Node<T>;
+    const min = this.minNode(right).key;
+    node.key = min;
+    node.right = this.removeNode(right, min);
+    return node;
+  }
+
   insert(key: T) {
     if (this.root === null) {
       this.root = new Node(key);
@@ -278,4 +242,82 @@ class AVLTree<T = unknown> {
     this.root = this.removeNode(this.root as Node<T>, key);
     this.root = this.balanceTree(this.root as Node<T>);
   }
+
+  preOrderTraverse(callback: (key: T) => void = (key) => console.log(key)) {
+    const preTraverse = (node: Node<T> | null) => {
+      if (node === null) {
+        return;
+      }
+
+      callback(node.key);
+      preTraverse(node.left as Node<T>);
+      preTraverse(node.right as Node<T>);
+    };
+
+    preTraverse(this.root);
+  }
+
+  inOrderTraverse(callback: (key: T) => void = (key) => console.log(key)) {
+    const inTraverse = (node: Node<T> | null) => {
+      if (node === null) {
+        return;
+      }
+
+      inTraverse(node.left as Node<T>);
+      callback(node.key);
+      inTraverse(node.right as Node<T>);
+    };
+
+    inTraverse(this.root);
+  }
+
+  postOrderTraverse(callback: (key: T) => void = (key) => console.log(key)) {
+    const postTraverse = (node: Node<T> | null) => {
+      if (node === null) {
+        return;
+      }
+
+      postTraverse(node.left as Node<T>);
+      postTraverse(node.right as Node<T>);
+      callback(node.key);
+    };
+
+    postTraverse(this.root);
+  }
+
+  min() {
+    if (this.root === null) {
+      return undefined;
+    }
+
+    const minNode = this.minNode(this.root);
+    return minNode.key;
+  }
+
+  private maxNode(node: Node<T>) {
+    let maxNode = node;
+    while(maxNode.right !== null) {
+      maxNode = maxNode.right as Node<T>;
+    }
+
+    return maxNode;
+  }
+
+  max() {
+    if (this.root === null) {
+      return undefined;
+    }
+
+    return this.maxNode(this.root).key;
+  }
 }
+
+const tree = new AVLTree();
+tree.insert(50);
+tree.insert(30);
+tree.insert(70);
+tree.insert(10);
+tree.insert(40);
+
+console.log(tree.min());
+console.log(tree.max());
