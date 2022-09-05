@@ -336,6 +336,11 @@ class AVLTree<T = unknown> {
     const nodeList: string[][] = [];
     const traverse = (nodes: Node<T> | null, idx: number = 0) => {
       if (nodes === null) {
+        if (nodeList[idx] === undefined) {
+          nodeList[idx] = [''];
+        } else {
+          nodeList[idx].push('');
+        }
         return;
       }
 
@@ -352,10 +357,33 @@ class AVLTree<T = unknown> {
     };
 
     traverse(node);
+    nodeList.pop();
+    
+    nodeList.forEach((item, idx) => {
+      if (item.length === 2 ** idx) {
+        return;
+      }
+
+      nodeList[idx - 1].forEach((val, key) => {
+        if (val !== '') {
+          return;
+        }
+
+        nodeList[idx].splice(2 * key, 0, '', '');
+      });
+    });
     return nodeList;
   }
 
-  
+  toString(printFn: (key: T) => string = (key) => `${key}`) {
+    const nodes = this.getAllNodeKey(this.root as Node<T>, printFn);
+    if (nodes.length === 0) {
+      return '';
+    }
+
+    console.log(nodes);
+    
+  }
 }
 
 const tree = new AVLTree<number>();
@@ -366,6 +394,7 @@ tree.insert(10);
 tree.insert(60);
 tree.insert(65);
 
-console.log(tree.min());
-console.log(tree.max());
-console.log(tree.search(50));
+// console.log(tree.min());
+// console.log(tree.max());
+// console.log(tree.search(50));
+tree.toString()
