@@ -331,15 +331,41 @@ class AVLTree<T = unknown> {
   search(key: T) {
     return this.searchNode(this.root, key);
   }
+
+  private getAllNodeKey(node: Node<T>, getNodeValue: (key: T) => string) {
+    const nodeList: string[][] = [];
+    const traverse = (nodes: Node<T> | null, idx: number = 0) => {
+      if (nodes === null) {
+        return;
+      }
+
+      const val = getNodeValue(nodes.key);
+      if (nodeList[idx] === undefined) {
+        nodeList[idx] = [val];
+      } else {
+        nodeList[idx].push(val);
+      }
+      idx++;
+
+      traverse(nodes.left as Node<T>, idx);
+      traverse(nodes.right as Node<T>, idx);
+    };
+
+    traverse(node);
+    return nodeList;
+  }
+
+  
 }
 
-const tree = new AVLTree();
+const tree = new AVLTree<number>();
 tree.insert(50);
 tree.insert(30);
 tree.insert(70);
 tree.insert(10);
-tree.insert(40);
+tree.insert(60);
+tree.insert(65);
 
 console.log(tree.min());
 console.log(tree.max());
-console.log(tree.search(30));
+console.log(tree.search(50));
