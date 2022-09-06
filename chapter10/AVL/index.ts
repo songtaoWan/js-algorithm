@@ -429,17 +429,7 @@ class AVLTree<T = unknown> {
       }
     }
 
-    let backStr = '';
-    arr.forEach((val, idx) => {
-      if (idx !== arr.length - 1) {
-        backStr += `${val}\n`;
-        return;
-      }
-
-      backStr += `${val}`;
-    });
-
-    return backStr;
+    return arr.join('\n');
   }
 }
 
