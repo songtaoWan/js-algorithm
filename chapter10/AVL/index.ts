@@ -358,7 +358,7 @@ class AVLTree<T = unknown> {
 
     traverse(node);
     nodeList.pop();
-    
+
     nodeList.forEach((item, idx) => {
       if (item.length === 2 ** idx) {
         return;
@@ -375,14 +375,71 @@ class AVLTree<T = unknown> {
     return nodeList;
   }
 
-  toString(printFn: (key: T) => string = (key) => `${key}`) {
+  printTree(printFn: (key: T) => string = (key) => `${key}`) {
     const nodes = this.getAllNodeKey(this.root as Node<T>, printFn);
     if (nodes.length === 0) {
       return '';
     }
 
-    console.log(nodes);
-    
+    // 使用4个空格符作分割
+    const splitStr = '    ';
+    const lastStr = nodes[nodes.length - 1].join(splitStr);
+
+    const spaceStr = new Array(lastStr.length).fill(' ').join('');
+    const arr: string[] = new Array(nodes.length).fill(spaceStr);
+    arr.pop();
+    arr.push(lastStr);
+
+    for (let i = nodes.length - 2; i >= 0; i--) {
+      const item = nodes[i];
+
+      for (let j = 0; j < item.length; j++) {
+        if (item[j] === '') {
+          continue;
+        }
+
+        let index = 0;
+        if (nodes[i + 1][j * 2] !== '' && nodes[i + 1][j * 2 + 1] !== '') {
+          index =
+            arr[i + 1].indexOf(nodes[i + 1][j * 2]) +
+            nodes[i + 1][j * 2].length +
+            arr[i + 1].indexOf(nodes[i + 1][j * 2 + 1]) +
+            nodes[i + 1][j * 2 + 1].length;
+          index = Math.floor(index / 2) - item[j].length;
+        } else if (nodes[i + 1][j * 2] !== '') {
+          index =
+            arr[i + 1].indexOf(nodes[i + 1][j * 2]) +
+            nodes[i + 1][j * 2].length +
+            Math.floor(splitStr.length / 2);
+        } else if (nodes[i + 1][j * 2 + 1] !== '') {
+          index =
+            arr[i + 1].indexOf(nodes[i + 1][j * 2 + 1]) -
+            Math.floor(splitStr.length / 2) -
+            item[j].length;
+        } else {
+          const one = j * 2 * splitStr.length;
+          const two = (j * 2 + 1) * splitStr.length;
+          index = Math.floor((one + two - item[j].length) / 2);
+        }
+
+        arr[i] =
+          arr[i].slice(0, index) +
+          item[j] +
+          arr[i].slice(index + item[j].length);
+      }
+    }
+
+    let backStr = '';
+    arr.forEach((val, idx) => {
+      if (idx !== arr.length - 1) {
+        backStr += `${val}\n`;
+        return;
+      }
+
+      backStr += `${val}`;
+    });
+
+    return backStr;
   }
 }
 
@@ -393,8 +450,15 @@ tree.insert(70);
 tree.insert(10);
 tree.insert(60);
 tree.insert(65);
+tree.insert(40);
+tree.insert(75);
+tree.insert(55);
+tree.insert(74);
+tree.insert(84);
+tree.insert(20);
+tree.insert(35);
 
 // console.log(tree.min());
 // console.log(tree.max());
 // console.log(tree.search(50));
-tree.toString()
+console.log(tree.printTree());
