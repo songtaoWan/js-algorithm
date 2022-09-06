@@ -375,8 +375,8 @@ class AVLTree<T = unknown> {
     return nodeList;
   }
 
-  printTree(printFn: (key: T) => string = (key) => `${key}`) {
-    const nodes = this.getAllNodeKey(this.root as Node<T>, printFn);
+  printTree(printNodeFn: (key: T) => string = (key) => `${key}`) {
+    const nodes = this.getAllNodeKey(this.root as Node<T>, printNodeFn);
     if (nodes.length === 0) {
       return '';
     }
