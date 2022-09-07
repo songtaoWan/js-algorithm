@@ -290,6 +290,7 @@ class AVLTree<T = unknown> {
         nodeList[idx].splice(2 * key, 0, '', '');
       });
     });
+    
     return nodeList;
   }
 
@@ -385,6 +386,7 @@ class AVLTree<T = unknown> {
     const splitStr = new Array(4).fill(' ').join('');
     // 将树的最深一层使用分割符拼成需要打印的字符串
     const lastStr = nodes[nodes.length - 1].join(splitStr);
+    
     // 用空格符拼一个和树最深一层长度一样的字符串，以便将节点的值插入对应位置
     const spaceStr = new Array(lastStr.length).fill(' ').join('');
 
@@ -421,6 +423,10 @@ class AVLTree<T = unknown> {
           const one = j * 2 * splitStr.length;
           const two = (j * 2 + 1) * splitStr.length;
           index = Math.floor((one + two - item[j].length) / 2);
+
+          if (index < prints[i].indexOf(item[j - 1])) {
+            index = prints[i].indexOf(item[j - 1]) + item[j - 1].length + splitStr.length;
+          }
         }
 
         prints[i] =
@@ -450,10 +456,13 @@ tree.insert(5);
 tree.insert(45);
 tree.insert(72);
 tree.insert(71);
+// tree.insert(1);
 
 // console.log(tree.min());
 // console.log(tree.max());
-// console.log(tree.search(70));
+// console.log(tree.search(75));
+// console.log(tree.search(50));
 // console.log('-----------');
-
+// tree.remove(84)
+// tree.insert(85)
 console.log(tree.printTree());
