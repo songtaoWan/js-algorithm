@@ -375,20 +375,22 @@ class AVLTree<T = unknown> {
     return nodeList;
   }
 
-  printTree(printNodeFn: (key: T) => string = (key) => `${key}`) {
-    const nodes = this.getAllNodeKey(this.root as Node<T>, printNodeFn);
+  printTree(nodeToString: (key: T) => string = (key) => `${key}`) {
+    const nodes = this.getAllNodeKey(this.root as Node<T>, nodeToString);
     if (nodes.length === 0) {
       return '';
     }
 
-    // 使用4个空格符作分割
-    const splitStr = '    ';
+    // 使用4个空格符作分割，推荐使用偶数
+    const splitStr = new Array(4).fill(' ').join('');
+    // 将树的最深一层使用分割符拼成需要打印的字符串
     const lastStr = nodes[nodes.length - 1].join(splitStr);
-
+    // 用空格符拼一个和树最深一层长度一样的字符串，以便将节点的值插入对应位置
     const spaceStr = new Array(lastStr.length).fill(' ').join('');
-    const arr: string[] = new Array(nodes.length).fill(spaceStr);
-    arr.pop();
-    arr.push(lastStr);
+
+    // 每层树节点拼成的打印字符串组成的数组
+    const prints: string[] = new Array(nodes.length - 1).fill(spaceStr);
+    prints.push(lastStr);
 
     for (let i = nodes.length - 2; i >= 0; i--) {
       const item = nodes[i];
@@ -398,38 +400,37 @@ class AVLTree<T = unknown> {
           continue;
         }
 
+        // 核心算法：根据子节点的位置计算父节点的位置
         let index = 0;
-        if (nodes[i + 1][j * 2] !== '' && nodes[i + 1][j * 2 + 1] !== '') {
-          index =
-            arr[i + 1].indexOf(nodes[i + 1][j * 2]) +
-            nodes[i + 1][j * 2].length +
-            arr[i + 1].indexOf(nodes[i + 1][j * 2 + 1]) +
-            nodes[i + 1][j * 2 + 1].length;
-          index = Math.floor(index / 2) - item[j].length;
-        } else if (nodes[i + 1][j * 2] !== '') {
-          index =
-            arr[i + 1].indexOf(nodes[i + 1][j * 2]) +
-            nodes[i + 1][j * 2].length +
-            Math.floor(splitStr.length / 2);
-        } else if (nodes[i + 1][j * 2 + 1] !== '') {
-          index =
-            arr[i + 1].indexOf(nodes[i + 1][j * 2 + 1]) -
-            Math.floor(splitStr.length / 2) -
-            item[j].length;
+        const next = nodes[i + 1];
+        if (next[j * 2] !== '' && next[j * 2 + 1] !== '') {
+          // 左右子节点都不为空
+          const leftIdx = prints[i + 1].indexOf(next[j * 2]) + next[j * 2].length;
+          const rightIdx = prints[i + 1].indexOf(next[j * 2 + 1]) + next[j * 2 + 1].length;
+          index = Math.floor((leftIdx + rightIdx) / 2) - item[j].length;
+        } else if (next[j * 2] !== '') {
+          // 左子节点不为空
+          const leftIdx = prints[i + 1].indexOf(next[j * 2]) + next[j * 2].length;
+          index = leftIdx + Math.floor(splitStr.length / 2);
+        } else if (next[j * 2 + 1] !== '') {
+          // 右子节点不为空
+          const rightIdx = prints[i + 1].indexOf(next[j * 2 + 1]);
+          index = rightIdx - Math.floor(splitStr.length / 2) - item[j].length;
         } else {
+          // 没有子节点
           const one = j * 2 * splitStr.length;
           const two = (j * 2 + 1) * splitStr.length;
           index = Math.floor((one + two - item[j].length) / 2);
         }
 
-        arr[i] =
-          arr[i].slice(0, index) +
+        prints[i] =
+          prints[i].slice(0, index) +
           item[j] +
-          arr[i].slice(index + item[j].length);
+          prints[i].slice(index + item[j].length);
       }
     }
 
-    return arr.join('\n');
+    return prints.join('\n');
   }
 }
 
@@ -445,8 +446,9 @@ tree.insert(75);
 tree.insert(55);
 tree.insert(74);
 tree.insert(84);
-tree.insert(20);
-tree.insert(35);
+tree.insert(5);
+tree.insert(45);
+tree.insert(72);
 
 // console.log(tree.min());
 // console.log(tree.max());
