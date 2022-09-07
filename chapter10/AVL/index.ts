@@ -15,7 +15,7 @@ class AVLTree<T = unknown> {
    * @param b
    * @returns
    */
-  defaultCompare(a: T, b: T) {
+  private defaultCompare(a: T, b: T) {
     if (a === b) {
       return 0;
     }
@@ -27,7 +27,7 @@ class AVLTree<T = unknown> {
     return -1;
   }
 
-  getNodeHeight(node: Node<T> | null) {
+  private getNodeHeight(node: Node<T> | null) {
     const traverse = (node: Node<T> | null, layer = -1): number => {
       if (node === null) {
         return layer;
@@ -47,7 +47,7 @@ class AVLTree<T = unknown> {
    * @param node
    * @returns
    */
-  getBalanceFactor(node: Node<T> | null) {
+  private getBalanceFactor(node: Node<T> | null) {
     if (node === null) {
       return 0;
     }
@@ -224,6 +224,75 @@ class AVLTree<T = unknown> {
     return node;
   }
 
+  private maxNode(node: Node<T>) {
+    let maxNode = node;
+    while (maxNode.right !== null) {
+      maxNode = maxNode.right as Node<T>;
+    }
+
+    return maxNode;
+  }
+
+  private searchNode(node: Node<T> | null, key: T): Node<T> | null {
+    if (node === null) {
+      return null;
+    }
+
+    let nextNode = node;
+    if (this.compareFn(key, node.key) === 1) {
+      nextNode = node.right as Node<T>;
+    } else if (this.compareFn(key, node.key) === -1) {
+      nextNode = node.left as Node<T>;
+    } else {
+      return node;
+    }
+
+    return this.searchNode(nextNode, key);
+  }
+
+  private getAllNodeKey(node: Node<T>, getNodeValue: (key: T) => string) {
+    const nodeList: string[][] = [];
+    const traverse = (nodes: Node<T> | null, idx: number = 0) => {
+      if (nodes === null) {
+        if (nodeList[idx] === undefined) {
+          nodeList[idx] = [''];
+        } else {
+          nodeList[idx].push('');
+        }
+        return;
+      }
+
+      const val = getNodeValue(nodes.key);
+      if (nodeList[idx] === undefined) {
+        nodeList[idx] = [val];
+      } else {
+        nodeList[idx].push(val);
+      }
+      idx++;
+
+      traverse(nodes.left as Node<T>, idx);
+      traverse(nodes.right as Node<T>, idx);
+    };
+
+    traverse(node);
+    nodeList.pop();
+
+    nodeList.forEach((item, idx) => {
+      if (item.length === 2 ** idx) {
+        return;
+      }
+
+      nodeList[idx - 1].forEach((val, key) => {
+        if (val !== '') {
+          return;
+        }
+
+        nodeList[idx].splice(2 * key, 0, '', '');
+      });
+    });
+    return nodeList;
+  }
+
   insert(key: T) {
     if (this.root === null) {
       this.root = new Node(key);
@@ -294,15 +363,6 @@ class AVLTree<T = unknown> {
     return minNode.key;
   }
 
-  private maxNode(node: Node<T>) {
-    let maxNode = node;
-    while (maxNode.right !== null) {
-      maxNode = maxNode.right as Node<T>;
-    }
-
-    return maxNode;
-  }
-
   max() {
     if (this.root === null) {
       return undefined;
@@ -311,68 +371,8 @@ class AVLTree<T = unknown> {
     return this.maxNode(this.root).key;
   }
 
-  private searchNode(node: Node<T> | null, key: T): Node<T> | null {
-    if (node === null) {
-      return null;
-    }
-
-    let nextNode = node;
-    if (this.compareFn(key, node.key) === 1) {
-      nextNode = node.right as Node<T>;
-    } else if (this.compareFn(key, node.key) === -1) {
-      nextNode = node.left as Node<T>;
-    } else {
-      return node;
-    }
-
-    return this.searchNode(nextNode, key);
-  }
-
   search(key: T) {
     return this.searchNode(this.root, key);
-  }
-
-  private getAllNodeKey(node: Node<T>, getNodeValue: (key: T) => string) {
-    const nodeList: string[][] = [];
-    const traverse = (nodes: Node<T> | null, idx: number = 0) => {
-      if (nodes === null) {
-        if (nodeList[idx] === undefined) {
-          nodeList[idx] = [''];
-        } else {
-          nodeList[idx].push('');
-        }
-        return;
-      }
-
-      const val = getNodeValue(nodes.key);
-      if (nodeList[idx] === undefined) {
-        nodeList[idx] = [val];
-      } else {
-        nodeList[idx].push(val);
-      }
-      idx++;
-
-      traverse(nodes.left as Node<T>, idx);
-      traverse(nodes.right as Node<T>, idx);
-    };
-
-    traverse(node);
-    nodeList.pop();
-
-    nodeList.forEach((item, idx) => {
-      if (item.length === 2 ** idx) {
-        return;
-      }
-
-      nodeList[idx - 1].forEach((val, key) => {
-        if (val !== '') {
-          return;
-        }
-
-        nodeList[idx].splice(2 * key, 0, '', '');
-      });
-    });
-    return nodeList;
   }
 
   printTree(nodeToString: (key: T) => string = (key) => `${key}`) {
@@ -449,8 +449,11 @@ tree.insert(84);
 tree.insert(5);
 tree.insert(45);
 tree.insert(72);
+tree.insert(71);
 
 // console.log(tree.min());
 // console.log(tree.max());
-// console.log(tree.search(50));
+// console.log(tree.search(70));
+// console.log('-----------');
+
 console.log(tree.printTree());
