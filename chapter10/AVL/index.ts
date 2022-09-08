@@ -290,7 +290,7 @@ class AVLTree<T = unknown> {
         nodeList[idx].splice(2 * key, 0, '', '');
       });
     });
-    
+
     return nodeList;
   }
 
@@ -386,7 +386,7 @@ class AVLTree<T = unknown> {
     const splitStr = new Array(4).fill(' ').join('');
     // 将树的最深一层使用分割符拼成需要打印的字符串
     const lastStr = nodes[nodes.length - 1].join(splitStr);
-    
+
     // 用空格符拼一个和树最深一层长度一样的字符串，以便将节点的值插入对应位置
     const spaceStr = new Array(lastStr.length).fill(' ').join('');
 
@@ -407,12 +407,15 @@ class AVLTree<T = unknown> {
         const next = nodes[i + 1];
         if (next[j * 2] !== '' && next[j * 2 + 1] !== '') {
           // 左右子节点都不为空
-          const leftIdx = prints[i + 1].indexOf(next[j * 2]) + next[j * 2].length;
-          const rightIdx = prints[i + 1].indexOf(next[j * 2 + 1]) + next[j * 2 + 1].length;
+          const leftIdx =
+            prints[i + 1].indexOf(next[j * 2]) + next[j * 2].length;
+          const rightIdx =
+            prints[i + 1].indexOf(next[j * 2 + 1]) + next[j * 2 + 1].length;
           index = Math.floor((leftIdx + rightIdx) / 2) - item[j].length;
         } else if (next[j * 2] !== '') {
           // 左子节点不为空
-          const leftIdx = prints[i + 1].indexOf(next[j * 2]) + next[j * 2].length;
+          const leftIdx =
+            prints[i + 1].indexOf(next[j * 2]) + next[j * 2].length;
           index = leftIdx + Math.floor(splitStr.length / 2);
         } else if (next[j * 2 + 1] !== '') {
           // 右子节点不为空
@@ -425,7 +428,10 @@ class AVLTree<T = unknown> {
           index = Math.floor((one + two - item[j].length) / 2);
 
           if (index < prints[i].indexOf(item[j - 1])) {
-            index = prints[i].indexOf(item[j - 1]) + item[j - 1].length + splitStr.length;
+            index =
+              prints[i].indexOf(item[j - 1]) +
+              item[j - 1].length +
+              splitStr.length;
           }
         }
 
@@ -436,33 +442,75 @@ class AVLTree<T = unknown> {
       }
     }
 
-    return prints.join('\n');
+    // 添加指示符，可以去掉
+    const letters: string[] = new Array(nodes.length - 1).fill(spaceStr);
+    const left = '╱';
+    const right = '╲';
+    nodes.forEach((val, key) => {
+      if (key === nodes.length - 1) {
+        return;
+      }
+
+      val.forEach((item, idx) => {
+        if (item === '') {
+          return;
+        }
+
+        const coord = prints[key].indexOf(item);
+        // 该节点的左子节点不为空
+        if (nodes[key + 1][idx * 2] !== '') {
+          letters[key] =
+            letters[key].slice(0, coord - left.length) +
+            left +
+            letters[key].slice(coord);
+        }
+
+        if (nodes[key + 1][idx * 2 + 1] !== '') {
+          letters[key] =
+            letters[key].slice(0, coord + item.length) +
+            right +
+            letters[key].slice(coord + item.length + right.length);
+        }
+      });
+    });
+
+    // 将指示符和树拼接
+    let str = '';
+    prints.forEach((item, idx) => {
+      if (idx === 0) {
+        str += `${item}`;
+        return;
+      }
+
+      str += `\n${letters[idx - 1]}\n${item}`;
+    });
+    return str;
   }
 }
 
-const tree = new AVLTree<number>();
-tree.insert(50);
-tree.insert(30);
-tree.insert(70);
-tree.insert(10);
-tree.insert(60);
-tree.insert(65);
-tree.insert(40);
-tree.insert(75);
-tree.insert(55);
-tree.insert(74);
-tree.insert(84);
-tree.insert(5);
-tree.insert(45);
-tree.insert(72);
-tree.insert(71);
-// tree.insert(1);
+const treeA = new AVLTree<number>();
+treeA.insert(50);
+treeA.insert(30);
+treeA.insert(70);
+treeA.insert(10);
+treeA.insert(60);
+treeA.insert(65);
+treeA.insert(40);
+treeA.insert(75);
+treeA.insert(55);
+treeA.insert(74);
+treeA.insert(84);
+treeA.insert(5);
+treeA.insert(45);
+treeA.insert(72);
+treeA.insert(71);
+// treeA.insert(1);
 
-// console.log(tree.min());
-// console.log(tree.max());
-// console.log(tree.search(75));
-// console.log(tree.search(50));
+// console.log(treeA.min());
+// console.log(treeA.max());
+// console.log(treeA.search(75));
+// console.log(treeA.search(50));
 // console.log('-----------');
-// tree.remove(84)
-// tree.insert(85)
-console.log(tree.printTree());
+// treeA.remove(84)
+// treeA.insert(85)
+console.log(treeA.printTree());
