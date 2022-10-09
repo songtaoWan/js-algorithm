@@ -67,19 +67,26 @@ class MinHeap<T = unknown> {
   /**
    * 下移操作：移除最小值后，保证二叉堆的特性
    */
-  private siftDown(idx: number = 0) {
+  private siftDown(idx: number = 0): void {
+    // 先找到左右子节点哪个更小，再交换位置，重复此操作
+    let minIdx = idx;
     const leftIdx = this.getLeftIdx(idx);
     const rightIdx = this.getRightIdx(idx);
 
-    if (this.compare(this.heap[idx], this.heap[leftIdx])) {
-      [this.heap[idx], this.heap[leftIdx]] = [this.heap[leftIdx], this.heap[idx]];
-      this.siftDown(leftIdx);
+    if (leftIdx < this.heap.length && this.compare(this.heap[minIdx], this.heap[leftIdx])) {
+      minIdx = leftIdx;
     }
 
-    if (this.compare(this.heap[idx], this.heap[rightIdx])) {
-      [this.heap[idx], this.heap[rightIdx]] = [this.heap[rightIdx], this.heap[idx]];
-      this.siftDown(rightIdx);
+    if (rightIdx < this.heap.length && this.compare(this.heap[minIdx], this.heap[rightIdx])) {
+      minIdx = rightIdx;
     }
+
+    if (minIdx === idx) {
+      return;
+    }
+
+    [this.heap[idx], this.heap[minIdx]] = [this.heap[minIdx], this.heap[idx]];
+    return this.siftDown(minIdx);
   }
 
   /**
@@ -130,8 +137,8 @@ class MinHeap<T = unknown> {
 
 const minheap = new MinHeap();
 minheap.insert(1);
-minheap.insert(2);
 minheap.insert(3);
+minheap.insert(2);
 minheap.insert(4);
 minheap.insert(5);
 minheap.insert(6);
