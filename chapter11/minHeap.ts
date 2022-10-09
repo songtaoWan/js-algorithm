@@ -18,6 +18,24 @@ class MinHeap<T = unknown> {
   }
 
   /**
+   * 获取节点的左侧子节点的位置
+   * @param idx 节点位置
+   * @returns 
+   */
+  private getLeftIdx(idx: number) {
+    return idx * 2 + 1;
+  }
+
+  /**
+   * 获取节点的右侧子节点的位置
+   * @param idx 节点位置
+   * @returns 
+   */
+  private getRightIdx(idx: number) {
+    return idx * 2 + 2;
+  }
+
+  /**
    * 根据子节点的位置得到父节点的位置
    * @param idx 子节点位置
    * @returns 
@@ -47,6 +65,24 @@ class MinHeap<T = unknown> {
   }
 
   /**
+   * 下移操作：移除最小值后，保证二叉堆的特性
+   */
+  private siftDown(idx: number = 0) {
+    const leftIdx = this.getLeftIdx(idx);
+    const rightIdx = this.getRightIdx(idx);
+
+    if (this.compare(this.heap[idx], this.heap[leftIdx])) {
+      [this.heap[idx], this.heap[leftIdx]] = [this.heap[leftIdx], this.heap[idx]];
+      this.siftDown(leftIdx);
+    }
+
+    if (this.compare(this.heap[idx], this.heap[rightIdx])) {
+      [this.heap[idx], this.heap[rightIdx]] = [this.heap[rightIdx], this.heap[idx]];
+      this.siftDown(rightIdx);
+    }
+  }
+
+  /**
    * 查找最小值并返回
    * @returns 
    */
@@ -72,16 +108,37 @@ class MinHeap<T = unknown> {
     this.siftUp(this.heap.length - 1);
     return true;
   }
+
+  /**
+   * 移除最小值并返回
+   */
+  extract() {
+    if (this.heap.length === 0) {
+      return undefined;
+    }
+
+    if (this.heap.length <= 2) {
+      return this.heap.shift();
+    }
+
+    const backVal = this.heap.shift();
+    this.heap.unshift(this.heap.pop() as T);
+    this.siftDown();
+    return backVal;
+  }
 }
 
 const minheap = new MinHeap();
+minheap.insert(1);
 minheap.insert(2);
 minheap.insert(3);
 minheap.insert(4);
 minheap.insert(5);
-minheap.insert(1);
-minheap.insert(1);
+minheap.insert(6);
+minheap.insert(7);
+minheap.insert(8);
+minheap.insert(9);
 
+minheap.extract()
 console.log(minheap.heap);
-console.log(minheap.findMinimum(), minheap.size());
 
