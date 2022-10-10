@@ -1,10 +1,13 @@
 class MinHeap<T = unknown> {
-  heap: T[];
+  private heap: T[];
+  /**
+   * a大于b返回true
+   */
   private compare: (a: T, b: T) => boolean;
 
   constructor(defaultCompare?: (a: T, b: T) => boolean) {
     this.heap = [];
-    this.compare = defaultCompare || this.compareFn;
+    this.compare = defaultCompare || MinHeap.compareFn;
   }
 
   /**
@@ -13,7 +16,7 @@ class MinHeap<T = unknown> {
    * @param b 
    * @returns 
    */
-  private compareFn(a: T, b: T) {
+  private static compareFn(a: any, b: any) {
     return a > b;
   }
 
@@ -147,5 +150,5 @@ minheap.insert(8);
 minheap.insert(9);
 
 minheap.extract()
-console.log(minheap.heap);
+// console.log(minheap.heap);
 
