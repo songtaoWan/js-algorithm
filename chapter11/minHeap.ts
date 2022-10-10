@@ -136,12 +136,38 @@ class MinHeap<T = unknown> {
     this.siftDown();
     return backVal;
   }
+
+  toString(nodeToString: (key: T) => string = (key) => `${key}`) {
+    if (this.heap.length === 0) {
+      return '';
+    }
+
+    const twoArr: string[][] = [];
+    this.heap.forEach((value, idx) => {
+      const str = nodeToString(value);
+      if (idx === 0) {
+        twoArr.push([str]);
+        return;
+      }
+
+      const lastIdx = twoArr.length - 1;
+      if (twoArr[lastIdx].length === 2 ** lastIdx){
+        twoArr.push([]);
+      }
+
+      twoArr[twoArr.length - 1].push(str);
+    });
+
+    return twoArr.map((val, idx) => {
+      return `第${idx + 1}层：${val.join(' -- ')}`;
+    }).join('\n');
+  }
 }
 
 const minheap = new MinHeap();
 minheap.insert(1);
-minheap.insert(3);
 minheap.insert(2);
+minheap.insert(3);
 minheap.insert(4);
 minheap.insert(5);
 minheap.insert(6);
@@ -149,6 +175,8 @@ minheap.insert(7);
 minheap.insert(8);
 minheap.insert(9);
 
-minheap.extract()
-// console.log(minheap.heap);
+console.log(minheap.toString());
 
+minheap.extract();
+
+console.log(minheap.toString());
