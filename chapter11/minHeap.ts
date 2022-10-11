@@ -59,6 +59,7 @@ class MinHeap<T = unknown> {
     let tempIdx = idx;
     let parentIdx = this.getParentNodeIdx(tempIdx);
 
+    // 如果插入的值小于其父节点的值，则交换它们的位置，直到其大于等于父节点的值
     while(parentIdx !== undefined && this.compare(this.heap[parentIdx], this.heap[tempIdx])) {
       [this.heap[tempIdx], this.heap[parentIdx]] = [this.heap[parentIdx], this.heap[tempIdx]];
 
