@@ -1,7 +1,7 @@
 /**
  * 堆排序，改变原数组
  * @param arr 待排序数组
- * @param compareFn 比较函数: a > b 升序，b > a 降序
+ * @param compareFn 比较函数: a > b 升序(构建最大堆)，b > a 降序(构建最小堆)
  * @returns 
  */
 function heapSort<T = unknown>(arr: T[], compareFn: (a: T, b: T) => boolean) {
@@ -32,7 +32,7 @@ function heapSort<T = unknown>(arr: T[], compareFn: (a: T, b: T) => boolean) {
   };
 
   const buildHeap = (len: number, arr: T[]) => {
-    // 一个数组只需要通过下移 (arr.length-1) / 2 次就可以完全堆化
+    // 一个数组只需要通过下移 （堆的大小 - 1） / 2 次就可以完全堆化
     const begin = Math.floor((len - 1) / 2);
     for(let i = begin; i >= 0; i--) {
       siftDown(i, len, arr);
@@ -51,7 +51,7 @@ function heapSort<T = unknown>(arr: T[], compareFn: (a: T, b: T) => boolean) {
   return arr;
 }
 
-const numbers: number[] = [];
+const numbers: number[] = [-2, 0, -1, 10, 100];
 for(let i = 0; i < 20; i++) {
   const value = Math.floor(Math.random() * 100 + 1);
   numbers.push(value);
