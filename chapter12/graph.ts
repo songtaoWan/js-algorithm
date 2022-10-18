@@ -46,7 +46,15 @@ class Graph<T extends number | string | symbol> {
     }
   }
 
-  printGraph() {
+  getVertices() {
+    return this.vertices;
+  }
+
+  getAdjlist() {
+    return this.adjList;
+  }
+
+  toString() {
     const vertices = Object.entries(this.adjList);
 
     if (!vertices.length) {
@@ -54,7 +62,7 @@ class Graph<T extends number | string | symbol> {
     }
 
     return vertices.map((val) => {
-      return `${val[0]} => ${val[1].join(', ')}`;
+      return `${val[0]} -> ${val[1].join(', ')}`;
     }).join('\n');
   }
 }
@@ -71,4 +79,4 @@ graph1.addEdge('b', 'd');
 graph1.addEdge('d', 'c');
 graph1.addEdge('c', 'a');
 
-console.log(graph1.printGraph());
+console.log(graph1.toString());
