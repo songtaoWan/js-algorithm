@@ -53,11 +53,9 @@ class Graph<T extends number | string | symbol> {
       return '图不存立，只有顶点没有边';
     }
 
-    let str = '';
-    for (const [key, val] of vertices) {
-      str += `${key} => ${val.join(', ')}\n`;
-    }
-    return str;
+    return vertices.map((val) => {
+      return `${val[0]} => ${val[1].join(', ')}`;
+    }).join('\n');
   }
 }
 
