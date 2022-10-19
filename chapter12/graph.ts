@@ -138,7 +138,7 @@ class Graph<T extends number | string | symbol> {
    * @param callback
    * @returns
    */
-  depthFirstSearch(callback?: (v: T) => void) {
+  depthFirstSearch(callback?: (v: T) => void): Record<T, {startTime: number; endTime: number; prevNode?: T}> | undefined {
     const vertices = this.getVertices();
     if (!vertices.length) {
       return;
@@ -189,7 +189,33 @@ class Graph<T extends number | string | symbol> {
       }
     }
 
-    return detail;
+    return detail as Record<T, {startTime: number; endTime: number; prevNode?: T}>;
+  }
+
+  /**
+   * 拓扑排序，只支持有向无环图（DAG）
+   * @returns 一种可能
+   */
+  topoSort() {
+    if (!this.isDirected) {
+      return;
+    }
+
+    const result = this.depthFirstSearch();
+    if (!result) {
+      return;
+    }
+
+    const arr: {vertex: T; endTime: number}[] = [];
+    for (const [key, val] of Object.entries<{endTime: number}>(result)) {
+      arr.push({vertex: key as T, endTime: val.endTime});
+    }
+
+    arr.sort((a, b) => b.endTime - a.endTime);
+    
+    return arr.map((val) => {
+      return val.vertex;
+    }).join(' - ');
   }
 
   toString() {
@@ -208,34 +234,19 @@ class Graph<T extends number | string | symbol> {
 }
 
 const graph1 = new Graph(true);
-graph1.addVertex('a');
-graph1.addVertex('b');
-graph1.addVertex('c');
-graph1.addVertex('d');
-graph1.addVertex('e');
-graph1.addVertex('f');
-graph1.addVertex('g');
-graph1.addVertex('h');
-graph1.addVertex('i');
-// graph1.addVertex('j');
-// graph1.addVertex('x');
-// graph1.addVertex('j');
+graph1.addVertex('A');
+graph1.addVertex('B');
+graph1.addVertex('C');
+graph1.addVertex('D');
+graph1.addVertex('E');
+graph1.addVertex('F');
 
-graph1.addEdge('a', 'b');
-graph1.addEdge('a', 'c');
-graph1.addEdge('a', 'd');
-graph1.addEdge('b', 'e');
-graph1.addEdge('b', 'f');
-graph1.addEdge('c', 'd');
-graph1.addEdge('c', 'g');
-graph1.addEdge('d', 'g');
-graph1.addEdge('d', 'h');
-graph1.addEdge('e', 'i');
-// graph1.addEdge('i', 'j');
-// graph1.addEdge('x', 'a');
-// graph1.addEdge('x', 'b');
+graph1.addEdge('A', 'C');
+graph1.addEdge('A', 'D');
+graph1.addEdge('B', 'D');
+graph1.addEdge('B', 'E');
+graph1.addEdge('C', 'F');
+graph1.addEdge('F', 'E');
 
 console.log(graph1.toString());
-
-const result = graph1.depthFirstSearch((v) => console.log(v));
-console.log(result);
+console.log(graph1.topoSort());
