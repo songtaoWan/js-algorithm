@@ -146,13 +146,18 @@ class Graph<T extends number | string | symbol> {
 
     const verticesColor = this.initColor();
     const adjList = this.getAdjlist();
+    const detail: Record<T, {startTime?: number; endTime?: number; prevNode?: T}> | {} = {};
 
+    let count = 0;
     const dfs = (v: T) => {
       if (verticesColor[v] !== Graph.Colors.white) {
         return;
       }
 
       verticesColor[v] = Graph.Colors.gray;
+      const info = detail as Record<T, {startTime?: number; endTime?: number; prevNode?: T}>;
+      info[v] = { startTime: ++count };
+
       if (callback) {
         callback(v);
       }
@@ -161,13 +166,19 @@ class Graph<T extends number | string | symbol> {
       // 处理没有邻接表的情况
       if (!list || !list.length) {
         verticesColor[v] = Graph.Colors.black;
+        info[v].endTime = ++count;
         return;
       }
 
       for (let i = 0; i < list.length; i++) {
         dfs(list[i]);
+        
+        if (!info[list[i]].prevNode) {
+          info[list[i]].prevNode = v;
+        }
       }
       verticesColor[v] = Graph.Colors.black;
+      info[v].endTime = ++count;
     };
 
     for (let loop = 0; loop < vertices.length; loop++) {
@@ -177,6 +188,8 @@ class Graph<T extends number | string | symbol> {
         dfs(v);
       }
     }
+
+    return detail;
   }
 
   toString() {
@@ -204,8 +217,8 @@ graph1.addVertex('f');
 graph1.addVertex('g');
 graph1.addVertex('h');
 graph1.addVertex('i');
-graph1.addVertex('j');
-graph1.addVertex('x');
+// graph1.addVertex('j');
+// graph1.addVertex('x');
 // graph1.addVertex('j');
 
 graph1.addEdge('a', 'b');
@@ -218,10 +231,11 @@ graph1.addEdge('c', 'g');
 graph1.addEdge('d', 'g');
 graph1.addEdge('d', 'h');
 graph1.addEdge('e', 'i');
-graph1.addEdge('i', 'j');
-graph1.addEdge('x', 'a');
-graph1.addEdge('x', 'b');
+// graph1.addEdge('i', 'j');
+// graph1.addEdge('x', 'a');
+// graph1.addEdge('x', 'b');
 
 console.log(graph1.toString());
 
-graph1.depthFirstSearch((v) => console.log(v));
+const result = graph1.depthFirstSearch((v) => console.log(v));
+console.log(result);
