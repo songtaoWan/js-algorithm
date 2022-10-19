@@ -80,6 +80,12 @@ class Graph<T extends number | string | symbol> {
     return color as Record<T, IValue<IColor>>;
   }
 
+  /**
+   * 广度优先搜索算法
+   * @param startVertex 起始顶点
+   * @param callback 一个顶点被探索完后执行的回调函数
+   * @returns 
+   */
   breadthFirstSearch(startVertex: T = this.vertices[0], callback?: (v: T) => void) {
     const vertices = this.getVertices();
     if (vertices.length < 2 || !vertices.includes(startVertex)) {
@@ -124,6 +130,46 @@ class Graph<T extends number | string | symbol> {
     }
   }
 
+  /**
+   * 深度优先搜索算法
+   * @param callback 
+   * @returns 
+   */
+  depthFirstSearch(callback?: (v: T) => void) {
+    const vertices = this.getVertices();
+    if (!vertices.length) {
+      return;
+    }
+
+    const verticesColor = this.initColor();
+    const adjList = this.getAdjlist();
+
+    const dfs = (v: T) => {
+      if (verticesColor[v] !== Graph.Colors.white) {
+        return;
+      }
+
+      verticesColor[v] = Graph.Colors.gray;
+      if (callback) {
+        callback(v);
+      }
+
+      const list = (adjList as Record<T, T[]>)[v];
+      // 处理没有邻接表的情况
+      if (!list || !list.length) {
+        verticesColor[v] = Graph.Colors.black;
+        return;
+      }
+
+      for (let i = 0; i < list.length; i++) {
+        dfs(list[i]);
+      }
+      verticesColor[v] = Graph.Colors.black;
+    };
+
+    dfs(vertices[0]);
+  }
+
   toString() {
     const vertices = Object.entries(this.adjList);
 
@@ -147,6 +193,7 @@ graph1.addVertex('f');
 graph1.addVertex('g');
 graph1.addVertex('h');
 graph1.addVertex('i');
+graph1.addVertex('j');
 
 graph1.addEdge('a', 'b');
 graph1.addEdge('a', 'c');
@@ -158,7 +205,8 @@ graph1.addEdge('c', 'g');
 graph1.addEdge('d', 'g');
 graph1.addEdge('d', 'h');
 graph1.addEdge('e', 'i');
+graph1.addEdge('i', 'j');
 
 console.log(graph1.toString());
 
-graph1.breadthFirstSearch('a', (v) => console.log(v));
+graph1.depthFirstSearch((v) => console.log(v));
