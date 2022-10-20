@@ -9,10 +9,10 @@ type IValue<T = unknown> = {
   [P in keyof T]: T[P];
 }[keyof T];
 
-class Graph<T extends number | string | symbol> {
+export default class Graph<T extends number | string | symbol> {
   private isDirected: boolean;
   private vertices: T[];
-  private adjList: Record<T, T[]> | {};
+  private adjList: Record<T, { distance: number; adjacentVertex: T }[]> | {};
   private static Colors: IColor = { white: 0, gray: 1, black: 2 };
 
   constructor(isDirected = false) {
@@ -33,8 +33,9 @@ class Graph<T extends number | string | symbol> {
    * 添加边，有向图v=>w，无向图v=>w w=>v
    * @param v
    * @param w
+   * @param distance 权
    */
-  addEdge(v: T, w: T) {
+  addEdge(v: T, w: T, distance: number = 1) {
     if (!this.vertices.includes(v)) {
       this.addVertex(v);
     }
@@ -42,19 +43,29 @@ class Graph<T extends number | string | symbol> {
       this.addVertex(w);
     }
 
-    if (!this.adjList.hasOwnProperty(v)) {
-      (this.adjList as Record<T, T[]>)[v] = [];
+    const adjList = this.adjList as Record<
+      T,
+      { distance: number; adjacentVertex: T }[]
+    >;
+    if (!adjList.hasOwnProperty(v)) {
+      adjList[v] = [];
     }
 
-    (this.adjList as Record<T, T[]>)[v].push(w);
+    adjList[v].push({
+      distance,
+      adjacentVertex: w
+    });
 
     // 无向图，互为边
     if (!this.isDirected) {
-      if (!this.adjList.hasOwnProperty(w)) {
-        (this.adjList as Record<T, T[]>)[w] = [];
+      if (!adjList.hasOwnProperty(w)) {
+        adjList[w] = [];
       }
 
-      (this.adjList as Record<T, T[]>)[w].push(v);
+      adjList[w].push({
+        distance,
+        adjacentVertex: v
+      });
     }
   }
 
@@ -96,7 +107,10 @@ class Graph<T extends number | string | symbol> {
     }
 
     const verticesColor = this.initColor();
-    const adjList = this.getAdjlist() as Record<T, T[]>;
+    const adjList = this.getAdjlist() as Record<
+      T,
+      { distance: number; adjacentVertex: T }[]
+    >;
 
     // 将起始顶点改为灰色并加入队列
     const queue: T[] = [];
@@ -118,7 +132,7 @@ class Graph<T extends number | string | symbol> {
       // 将邻接表中未访问的顶点加入队列中
       const list = adjList[vertex];
       for (let i = 0; i < list.length; i++) {
-        const v = list[i];
+        const v = list[i].adjacentVertex;
 
         if (verticesColor[v] === Graph.Colors.white) {
           verticesColor[v] = Graph.Colors.gray;
@@ -138,15 +152,21 @@ class Graph<T extends number | string | symbol> {
    * @param callback
    * @returns
    */
-  depthFirstSearch(callback?: (v: T) => void): Record<T, {startTime: number; endTime: number; prevNode?: T}> | undefined {
+  depthFirstSearch(
+    callback?: (v: T) => void
+  ):
+    | Record<T, { startTime: number; endTime: number; prevNode?: T }>
+    | undefined {
     const vertices = this.getVertices();
     if (!vertices.length) {
       return;
     }
 
     const verticesColor = this.initColor();
-    const adjList = this.getAdjlist();
-    const detail: Record<T, {startTime?: number; endTime?: number; prevNode?: T}> | {} = {};
+    const adjList = this.getAdjlist() as Record<T, { distance: number; adjacentVertex: T }[]>;
+    const detail:
+      | Record<T, { startTime?: number; endTime?: number; prevNode?: T }>
+      | {} = {};
 
     let count = 0;
     const dfs = (v: T) => {
@@ -155,14 +175,17 @@ class Graph<T extends number | string | symbol> {
       }
 
       verticesColor[v] = Graph.Colors.gray;
-      const info = detail as Record<T, {startTime?: number; endTime?: number; prevNode?: T}>;
+      const info = detail as Record<
+        T,
+        { startTime?: number; endTime?: number; prevNode?: T }
+      >;
       info[v] = { startTime: ++count };
 
       if (callback) {
         callback(v);
       }
 
-      const list = (adjList as Record<T, T[]>)[v];
+      const list = adjList[v];
       // 处理没有邻接表的情况
       if (!list || !list.length) {
         verticesColor[v] = Graph.Colors.black;
@@ -171,10 +194,14 @@ class Graph<T extends number | string | symbol> {
       }
 
       for (let i = 0; i < list.length; i++) {
-        dfs(list[i]);
-        
-        if (!info[list[i]].prevNode) {
-          info[list[i]].prevNode = v;
+        if (verticesColor[list[i].adjacentVertex] === Graph.Colors.gray) {
+          continue;
+        }
+
+        dfs(list[i].adjacentVertex);
+
+        if (!info[list[i].adjacentVertex].prevNode) {
+          info[list[i].adjacentVertex].prevNode = v;
         }
       }
       verticesColor[v] = Graph.Colors.black;
@@ -189,7 +216,10 @@ class Graph<T extends number | string | symbol> {
       }
     }
 
-    return detail as Record<T, {startTime: number; endTime: number; prevNode?: T}>;
+    return detail as Record<
+      T,
+      { startTime: number; endTime: number; prevNode?: T }
+    >;
   }
 
   /**
@@ -206,20 +236,22 @@ class Graph<T extends number | string | symbol> {
       return;
     }
 
-    const arr: {vertex: T; endTime: number}[] = [];
-    for (const [key, val] of Object.entries<{endTime: number}>(result)) {
-      arr.push({vertex: key as T, endTime: val.endTime});
+    const arr: { vertex: T; endTime: number }[] = [];
+    for (const [key, val] of Object.entries<{ endTime: number }>(result)) {
+      arr.push({ vertex: key as T, endTime: val.endTime });
     }
 
     arr.sort((a, b) => b.endTime - a.endTime);
-    
-    return arr.map((val) => {
-      return val.vertex;
-    }).join(' - ');
+
+    return arr
+      .map((val) => {
+        return val.vertex;
+      })
+      .join(' - ');
   }
 
   toString() {
-    const vertices = Object.entries(this.adjList);
+    const vertices = Object.entries<{ distance: number; adjacentVertex: T }[]>(this.adjList);
 
     if (!vertices.length) {
       return '图不存立，只有顶点没有边';
@@ -227,26 +259,42 @@ class Graph<T extends number | string | symbol> {
 
     return vertices
       .map((val) => {
-        return `${val[0]} -> ${(val[1] as T[]).join(', ')}`;
+        const item = val[1].map((value) => value.adjacentVertex);
+
+        return `${val[0]} -> ${item.join(', ')}`;
       })
       .join('\n');
   }
+
+  getAdjacentMatrix() {}
 }
 
-const graph1 = new Graph(true);
+const graph1 = new Graph();
 graph1.addVertex('A');
 graph1.addVertex('B');
 graph1.addVertex('C');
 graph1.addVertex('D');
 graph1.addVertex('E');
 graph1.addVertex('F');
+graph1.addVertex('G');
+graph1.addVertex('H');
+graph1.addVertex('I');
 
+graph1.addEdge('A', 'B');
 graph1.addEdge('A', 'C');
 graph1.addEdge('A', 'D');
-graph1.addEdge('B', 'D');
 graph1.addEdge('B', 'E');
-graph1.addEdge('C', 'F');
-graph1.addEdge('F', 'E');
+graph1.addEdge('B', 'F');
+graph1.addEdge('C', 'D');
+graph1.addEdge('C', 'G');
+graph1.addEdge('D', 'G');
+graph1.addEdge('D', 'H');
+graph1.addEdge('E', 'I');
 
-console.log(graph1.toString());
-console.log(graph1.topoSort());
+// console.log(graph1.toString());
+console.log('广度优先：');
+graph1.breadthFirstSearch(undefined, (v) => console.log(v));
+console.log('深度优先：');
+const result = graph1.depthFirstSearch((v) => console.log(v));
+// console.log(graph1.topoSort());
+console.log(result);
