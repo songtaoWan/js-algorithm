@@ -312,6 +312,52 @@ export default class Graph<T extends number | string | symbol> {
 
     return adjacentMatrix;
   }
+
+  /**
+   * 获取图的关联矩阵
+   * @param isNonAdjacentZero 是否用零表示不存在的边
+   * @returns 
+   */
+  getIncidenceMatrix(isNonAdjacentZero = false) {
+    const vertices = this.getVertices();
+    if (!vertices.length) {
+      return;
+    }
+
+    const adjList = this.getAdjlist() as Record<T, { distance: number; adjacentVertex: T }[]>;
+
+    const incidenceMatrix: number[][] = [];
+    let edgeNum = 0;
+    for (const [key, value] of Object.entries<{ distance: number; adjacentVertex: T }[]>(adjList)) {
+      const i = vertices.findIndex((item) => item === key);
+      if (incidenceMatrix[i] === undefined) {
+        incidenceMatrix[i] = [];
+      }
+
+      value.forEach((item) => {
+        incidenceMatrix[i][edgeNum] = item.distance;
+        edgeNum++;
+      });
+    }
+
+    if (isNonAdjacentZero) {
+      const size = vertices.length;
+      const edges = incidenceMatrix[incidenceMatrix.length - 1].length;
+      for (let i = 0; i < size; i++) {
+        if (!incidenceMatrix[i]) {
+          incidenceMatrix[i] = [];
+        }
+
+        for (let j = 0; j < edges; j++) {
+          if (incidenceMatrix[i][j] === undefined) {
+            incidenceMatrix[i][j] = 0;
+          }
+        }
+      }
+    }
+
+    return incidenceMatrix;
+  }
 }
 
 const graph1 = new Graph(true);
@@ -332,6 +378,7 @@ graph1.addEdge('D', 'F', 2);
 graph1.addEdge('E', 'D', 3);
 graph1.addEdge('E', 'F', 2);
 
-console.log(graph1.toString());
-const result = graph1.getAdjacentMatrix(true);
+console.log(graph1.getAdjlist());
+// const result = graph1.getAdjacentMatrix(true);
+const result = graph1.getIncidenceMatrix(true);
 console.log(result);
