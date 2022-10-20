@@ -266,35 +266,72 @@ export default class Graph<T extends number | string | symbol> {
       .join('\n');
   }
 
-  getAdjacentMatrix() {}
+  /**
+   * 获取图的邻接矩阵
+   * @param isNonAdjacentZero 是否用零表示不相邻的顶点，默认空元素
+   * @returns 
+   */
+  getAdjacentMatrix(isNonAdjacentZero = false) {
+    const vertices = this.getVertices();
+    if (!vertices.length) {
+      return;
+    }
+
+    const adjList = this.getAdjlist() as Record<T, { distance: number; adjacentVertex: T }[]>;
+    const adjacentMatrix: number[][] = [];
+    for (const [key, value] of Object.entries<{ distance: number; adjacentVertex: T }[]>(adjList)) {
+      const i = vertices.findIndex((item) => item === key);
+      
+      value.forEach((val) => {
+        const j = vertices.findIndex((item) => item === val.adjacentVertex);
+
+        if (!adjacentMatrix[i]) {
+          adjacentMatrix[i] = [];
+          adjacentMatrix[i][j] = val.distance;
+          return;
+        }
+
+        adjacentMatrix[i][j] = val.distance;
+      });
+    }
+
+    if (isNonAdjacentZero) {
+      const size = vertices.length;
+      for (let i = 0; i < size; i++) {
+        if (!adjacentMatrix[i]) {
+          adjacentMatrix[i] = [];
+        }
+
+        for (let j = 0; j < size; j++) {
+          if (adjacentMatrix[i][j] === undefined) {
+            adjacentMatrix[i][j] = 0;
+          }
+        }
+      }
+    }
+
+    return adjacentMatrix;
+  }
 }
 
-const graph1 = new Graph();
+const graph1 = new Graph(true);
 graph1.addVertex('A');
 graph1.addVertex('B');
 graph1.addVertex('C');
 graph1.addVertex('D');
 graph1.addVertex('E');
 graph1.addVertex('F');
-graph1.addVertex('G');
-graph1.addVertex('H');
-graph1.addVertex('I');
 
-graph1.addEdge('A', 'B');
-graph1.addEdge('A', 'C');
-graph1.addEdge('A', 'D');
-graph1.addEdge('B', 'E');
-graph1.addEdge('B', 'F');
-graph1.addEdge('C', 'D');
-graph1.addEdge('C', 'G');
-graph1.addEdge('D', 'G');
-graph1.addEdge('D', 'H');
-graph1.addEdge('E', 'I');
+graph1.addEdge('A', 'B', 2);
+graph1.addEdge('A', 'C', 4);
+graph1.addEdge('B', 'C', 2);
+graph1.addEdge('B', 'D', 4);
+graph1.addEdge('B', 'E', 2);
+graph1.addEdge('C', 'E', 3);
+graph1.addEdge('D', 'F', 2);
+graph1.addEdge('E', 'D', 3);
+graph1.addEdge('E', 'F', 2);
 
-// console.log(graph1.toString());
-console.log('广度优先：');
-graph1.breadthFirstSearch(undefined, (v) => console.log(v));
-console.log('深度优先：');
-const result = graph1.depthFirstSearch((v) => console.log(v));
-// console.log(graph1.topoSort());
+console.log(graph1.toString());
+const result = graph1.getAdjacentMatrix(true);
 console.log(result);
