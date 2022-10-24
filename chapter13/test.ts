@@ -30,10 +30,21 @@ export const getChaoticArray = (len = 10, min = 10, max = 100) => {
     [min, max] = [max, min];
   }
 
+  if (max - min < len) {
+    max += len;
+  }
+
   const arr: number[] = [];
   for (let i = 0; i < len; i++) {
-    const randomNum = Math.floor(Math.random() * (max - min) + min);
-    arr.push(randomNum);
+    let randomNum = 0;
+
+    do {
+      randomNum = Math.floor(Math.random() * (max - min) + min);
+      if (!arr.includes(randomNum)) {
+        arr.push(randomNum);
+        break;
+      }
+    } while(true);
   }
 
   return arr;
