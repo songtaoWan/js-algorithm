@@ -13,10 +13,10 @@ export const compare = <T = unknown>(a: T, b: T) => {
 };
 
 /**
- * 生成一个乱序数组
- * @param len 数组长度
- * @param min 
- * @param max 
+ * 生成一个没有重复元素乱序数组，如果最大值与最小值的差小于要求的数组长度，则最大值修改为最大值+长度
+ * @param len 数组长度，默认 10
+ * @param min 默认 10
+ * @param max 默认 100
  * @returns 
  */
 export const getChaoticArray = (len = 10, min = 10, max = 100) => {
