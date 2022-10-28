@@ -4,9 +4,9 @@
 
 /**
  * a大于b返回true
- * @param a 
- * @param b 
- * @returns 
+ * @param a
+ * @param b
+ * @returns
  */
 export const compare = <T = unknown>(a: T, b: T) => {
   return a > b;
@@ -17,7 +17,7 @@ export const compare = <T = unknown>(a: T, b: T) => {
  * @param len 数组长度，默认 10
  * @param min 默认 10
  * @param max 默认 100
- * @returns 
+ * @returns
  */
 export const getChaoticArray = (len = 10, min = 10, max = 100) => {
   if (len < 0) {
@@ -42,8 +42,24 @@ export const getChaoticArray = (len = 10, min = 10, max = 100) => {
         arr.push(randomNum);
         break;
       }
-    } while(true);
+    } while (true);
   }
 
   return arr;
+};
+
+/**
+ * 打印算法速度
+ * @param arr 
+ * @param compare 
+ * @param fn 排序算法
+ */
+export const printAlgorithmSpeed = <T = unknown>(
+  arr: T[],
+  compare: (a: T, b: T) => boolean,
+  fn: (arr: T[], compare: (a: T, b: T) => boolean) => T[]
+) => {
+  console.time(`${fn.name}(${arr.length}): `);
+  fn(arr, compare);
+  console.timeEnd(`${fn.name}(${arr.length}): `);
 };
