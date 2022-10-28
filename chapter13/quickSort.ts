@@ -37,14 +37,16 @@ export default function quickSort<T = unknown>(
        * 现在将它们交换位置，保证左边都是小于基准值，右边都是大于基准值
        */
       if (i <= j) {
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+        if (i !== j) {
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
 
         // 继续下一个元素
         i++;
         j--;
       }
     }
-
+    
     // 左子序列的长度大于1，继续划分
     if (leftIdx < i - 1) {
       quick(arr, leftIdx, i - 1, compareFn);
