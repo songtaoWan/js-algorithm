@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>test algorithm speed</title>
+</head>
+<body>
+  <script src="./sort.js"></script>
+  <script>
+    const chaoticArr = getChaoticArray(100000);
+
+    const qBeg = performance.now();
+    for (let i = 0; i < 10; i++) {
+      quickSort(JSON.parse(JSON.stringify(chaoticArr)), compare);
+    }
+    const res = (performance.now() - qBeg) / 10;
+    console.log('quick: ', res.toFixed(4));
+
+    const mBeg = performance.now();
+    for (let i = 0; i < 10; i++) {
+      mergeSort(JSON.parse(JSON.stringify(chaoticArr)), compare);
+    }
+    const mres = (performance.now() - mBeg) / 10;
+    console.log('merge: ', mres.toFixed(4));
+
+    const sBeg = performance.now();
+    for (let i = 0; i < 10; i++) {
+      shellSort(JSON.parse(JSON.stringify(chaoticArr)), compare);
+    }
+    const sres = (performance.now() - sBeg) / 10;
+    console.log('shellSort: ', sres.toFixed(4));
+  </script>
+</body>
+</html>
