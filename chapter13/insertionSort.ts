@@ -1,5 +1,11 @@
 import { compare, getChaoticArray } from './test';
 
+/**
+ * 插入排序，改变原数组
+ * @param arr 
+ * @param compareFn 
+ * @returns 
+ */
 export default function insertionSort<T = unknown>(
   arr: T[],
   compareFn: (a: T, b: T) => boolean
@@ -26,10 +32,10 @@ export default function insertionSort<T = unknown>(
   return arr;
 }
 
-const cha1 = getChaoticArray();
+// const cha1 = getChaoticArray();
 
-const r1 = insertionSort(cha1, compare);
-console.log(r1);
-const r2 = insertionSort(cha1, (a, b) => b > a);
-console.log(r2);
+// const r1 = insertionSort(cha1, compare);
+// console.log(r1);
+// const r2 = insertionSort(cha1, (a, b) => b > a);
+// console.log(r2);
 
