@@ -10,57 +10,44 @@ export default function countingSort(arr: number[]) {
     return [...arr];
   }
 
-  const counts: number[] = [];
-  const minus: number[] = [];
+  const counts: {positive: number, negative: number}[] = [];
   arr.forEach((val) => {
     if (!Number.isInteger(val)) {
       return;
     }
 
-    if (val < 0) {
-      const num = Math.abs(val);
-      if (!minus[num]) {
-        minus[num] = 0;
+    if (!counts[Math.abs(val)]) {
+      counts[Math.abs(val)] = {positive: 0, negative: 0};
+    }
+
+    if (val >= 0) {
+      counts[val].positive++;
+    } else {
+      counts[Math.abs(val)].negative++;
+    }
+  });
+
+  const sorts: number[] = [];
+  counts.forEach((value, i) => {
+    if (!value) {
+      return;
+    }
+
+    while(value.positive > 0 || value.negative > 0) {
+      if (value.positive > 0) {
+        sorts.push(i);
+        value.positive--;
       }
-      minus[num]++;
-      return;
-    }
 
-    if (counts[val] === undefined) {
-      counts[val] = 1;
-      return;
-    }
-
-    counts[val]++;
-  });
-
-  const newMinus: number[] = [];
-  minus.forEach((val, i) => {
-    if (!val) {
-      return;
-    }
-
-    while(val > 0) {
-      newMinus.unshift(-i);
-      val--;
+      if (value.negative > 0) {
+        sorts.unshift(-i);
+        value.negative--;
+      }
     }
   });
-
-  const newArr: number[] = [];
-  counts.forEach((val, i) => {
-    if (!val) {
-      return;
-    }
-
-    while(val > 0) {
-      newArr.push(i);
-      val--;
-    }
-  });
-
-  return newMinus.concat(newArr);
+  return sorts;
 }
 
-const carr = getChaoticArray();
-const cres = countingSort(carr.concat([-11, -1, 2, -2, 1, 11, -3, -100]));
+const carr = getChaoticArray(20, -100);
+const cres = countingSort(carr);
 console.log(cres);
