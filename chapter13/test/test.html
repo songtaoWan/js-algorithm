@@ -1,36 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>test algorithm speed</title>
-</head>
-<body>
-  <script src="./sort.js"></script>
-  <script>
-    const chaoticArr = getChaoticArray(100000);
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test algorithm speed</title>
+    <style>
+      div {
+        width: 100%;
+        text-align: center;
+      }
+      input {
+        margin: 20px auto;
+        width: 280px;
+        height: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input
+        id="len"
+        type="number"
+        placeholder="请输入数组长度，太长可能会造成电脑卡死"
+      />
+      <input
+        id="begin"
+        type="button"
+        value="开始排序"
+        style="width: 80px; cursor: pointer"
+      />
+      <div id="start"></div>
+      <div id="end"></div>
+    </div>
+    <script src="./sort.js"></script>
+    <script>
+      let wait = false;
 
-    const qBeg = performance.now();
-    for (let i = 0; i < 10; i++) {
-      quickSort(JSON.parse(JSON.stringify(chaoticArr)), compare);
-    }
-    const res = (performance.now() - qBeg) / 10;
-    console.log('quick: ', res.toFixed(4));
+      document.getElementById('begin').addEventListener('click', () => {
+        if (wait) {
+          alert('请耐心等待排序结果');
+          return;
+        }
 
-    const mBeg = performance.now();
-    for (let i = 0; i < 10; i++) {
-      mergeSort(JSON.parse(JSON.stringify(chaoticArr)), compare);
-    }
-    const mres = (performance.now() - mBeg) / 10;
-    console.log('merge: ', mres.toFixed(4));
+        const input = document.getElementById('len');
+        if (!input.value) {
+          alert('请输入数组长度');
+          return;
+        }
 
-    const sBeg = performance.now();
-    for (let i = 0; i < 10; i++) {
-      shellSort(JSON.parse(JSON.stringify(chaoticArr)), compare);
-    }
-    const sres = (performance.now() - sBeg) / 10;
-    console.log('shellSort: ', sres.toFixed(4));
-  </script>
-</body>
+        wait = true;
+        const length = Number(input.value);
+        const chaoticArr = getChaoticArray(length);
+
+        document.getElementById('start').innerText = '';
+        if (length <= 30) {
+          document.getElementById(
+            'start'
+          ).innerText = `待排序数组：[ ${chaoticArr.join(', ')} ]`;
+        }
+
+        const element = document.getElementById('end');
+        element.innerHTML = '';
+
+        // 1.冒泡排序进程
+        setTimeout(() => {
+          const bubbleWorker = new Worker('./bubbleWorker.js');
+          bubbleWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+
+            wait = false;
+          });
+          bubbleWorker.postMessage(chaoticArr);
+        }, 0);
+
+        // 2.选择排序进程
+        setTimeout(() => {
+          const selectionWorker = new Worker('./selectionWorker.js');
+          selectionWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+          });
+          selectionWorker.postMessage(chaoticArr);
+        }, 0);
+
+        // 3.插入排序进程
+        setTimeout(() => {
+          const insertionWorker = new Worker('./insertionWorker.js');
+          insertionWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+          });
+          insertionWorker.postMessage(chaoticArr);
+        }, 0);
+
+        // 4.希尔排序进程
+        setTimeout(() => {
+          const shellWorker = new Worker('./shellWorker.js');
+          shellWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+          });
+          shellWorker.postMessage(chaoticArr);
+        }, 0);
+
+        // 5.归并排序进程
+        setTimeout(() => {
+          const mergeWorker = new Worker('./mergeWorker.js');
+          mergeWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+          });
+          mergeWorker.postMessage(chaoticArr);
+        }, 0);
+
+        // 6.快速排序进程
+        setTimeout(() => {
+          const quickWorker = new Worker('./quickWorker.js');
+          quickWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+          });
+          quickWorker.postMessage(chaoticArr);
+        }, 0);
+
+        // 7.计数排序进程
+        setTimeout(() => {
+          const countingWorker = new Worker('./countingWorker.js');
+          countingWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+          });
+          countingWorker.postMessage(chaoticArr);
+        }, 0);
+
+        // 8.基数排序进程
+        setTimeout(() => {
+          const radixWorker = new Worker('./radixWorker.js');
+          radixWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+          });
+          radixWorker.postMessage(chaoticArr);
+        }, 0);
+
+        // 9.桶排序进程
+        setTimeout(() => {
+          const bucketWorker = new Worker('./bucketWorker.js');
+          bucketWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+          });
+          bucketWorker.postMessage(chaoticArr);
+        }, 0);
+
+        // 10.堆排序进程
+        setTimeout(() => {
+          const heapWorker = new Worker('./heapWorker.js');
+          heapWorker.addEventListener('message', (e) => {
+            const text = e.data;
+            element.innerHTML += `<p>${text}</p>`;
+          });
+          heapWorker.postMessage(chaoticArr);
+        }, 0);
+      });
+    </script>
+  </body>
 </html>
