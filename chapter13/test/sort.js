@@ -286,8 +286,8 @@ const quickSort = (arr, compareFn) => {
 
 /**
  * 计数排序，不改变原数组，只支持整数
- * @param {any[]} arr 
- * @returns 
+ * @param {any[]} arr
+ * @returns
  */
 const countingSort = (arr) => {
   if (arr.length < 2) {
@@ -301,7 +301,7 @@ const countingSort = (arr) => {
     }
 
     if (!counts[Math.abs(val)]) {
-      counts[Math.abs(val)] = {positive: 0, negative: 0};
+      counts[Math.abs(val)] = { positive: 0, negative: 0 };
     }
 
     if (val >= 0) {
@@ -313,7 +313,7 @@ const countingSort = (arr) => {
 
   const sorts = [];
   counts.forEach((value, i) => {
-    while(value.positive > 0 || value.negative > 0) {
+    while (value.positive > 0 || value.negative > 0) {
       if (value.positive > 0) {
         sorts.push(i);
         value.positive--;
@@ -326,4 +326,65 @@ const countingSort = (arr) => {
     }
   });
   return sorts;
+};
+
+/**
+ * 桶排序，不改变原数组
+ * @param {any[]} arr
+ * @param {(a) => number} getValue 获取每个元素用来排序的值
+ * @param {number} bucketSize 每个桶的大小，默认5
+ * @param isAsc 是否升序，默认是
+ * @returns
+ */
+const bucketSort = (arr, getValue, bucketSize, isAsc = true) => {
+  if (arr.length < 2) {
+    return arr;
+  }
+  if (bucketSize <= 0) {
+    bucketSize = 5;
+  }
+  if (~~bucketSize !== bucketSize) {
+    bucketSize = bucketSize | 0;
+  }
+
+  const createBucket = (arr, getValue, bucketSize = 5) => {
+    let min = getValue(arr[0]);
+    arr.forEach((val) => {
+      const realValue = getValue(val);
+
+      if (realValue < min) {
+        min = realValue;
+        return;
+      }
+    });
+
+    const buckets = [];
+    arr.forEach((val) => {
+      // 计算元素该放入哪个桶
+      const i = Math.floor((getValue(val) - min) / bucketSize);
+
+      if (!buckets[i]) {
+        buckets[i] = [];
+      }
+
+      buckets[i].push(val);
+    });
+
+    return buckets;
+  };
+
+  const buckets = createBucket(arr, getValue, bucketSize);
+  const newArr = [];
+  buckets.forEach((val) => {
+    if (!isAsc) {
+      insertionSort(val, (a, b) => getValue(a) < getValue(b));
+      newArr.unshift(...val);
+      return;
+    }
+
+    insertionSort(val, (a, b) => getValue(a) > getValue(b));
+    newArr.push(...val);
+  });
+
+  return newArr;
 };
