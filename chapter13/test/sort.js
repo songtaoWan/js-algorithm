@@ -46,11 +46,11 @@ const getChaoticArray = (len = 10, min = 10, max = 100) => {
 
 /**
  * 冒泡排序
- * @param arr
- * @param compareFn
+ * @param {any[]} arr
+ * @param {(a, b) => boolean} compareFn
  * @returns
  */
-const bubbleSort = (arr, compareFn = (a, b) => a > b) => {
+const bubbleSort = (arr, compareFn) => {
   const length = arr.length;
   if (length < 2) {
     return arr;
@@ -62,6 +62,35 @@ const bubbleSort = (arr, compareFn = (a, b) => a > b) => {
       if (compareFn(arr[j], arr[j + 1])) {
         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
       }
+    }
+  }
+
+  return arr;
+};
+
+/**
+ * 选择排序，改变原数组
+ * @param {any[]} arr
+ * @param {(a, b) => boolean} compareFn
+ * @returns
+ */
+const selectionSort = (arr, compareFn) => {
+  const length = arr.length;
+  if (length < 2) {
+    return arr;
+  }
+
+  for (let i = 0; i < length - 1; i++) {
+    let idx = i;
+    // 寻找最大（小）值索引，最大还是最小取决于你的比较函数
+    for (let j = i + 1; j < length; j++) {
+      if (compareFn(arr[idx], arr[j])) {
+        idx = j;
+      }
+    }
+
+    if (i !== idx) {
+      [arr[i], arr[idx]] = [arr[idx], arr[i]];
     }
   }
 
