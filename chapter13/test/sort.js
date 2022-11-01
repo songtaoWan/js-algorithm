@@ -29,7 +29,7 @@ const getPseudoRandomNumber = (min = 0, max = 65532) => {
     const arr = new Uint16Array(1);
     const maxNum = 65532;
 
-    const randomNum = crypto.webcrypto.getRandomValues(arr)[0] / maxNum;
+    const randomNum = crypto.getRandomValues(arr)[0] / maxNum;
     return Math.ceil(randomNum * (max - min) + min);
   } catch (ex) {
     console.error(ex.message);
@@ -364,7 +364,7 @@ const countingSort = (arr) => {
  * @param isAsc 是否升序，默认是
  * @returns
  */
-const bucketSort = (arr, getValue, bucketSize, isAsc = true) => {
+const bucketSort = (arr, getValue, bucketSize = 5, isAsc = true) => {
   if (arr.length < 2) {
     return arr;
   }
