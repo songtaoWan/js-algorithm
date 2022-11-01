@@ -7,7 +7,7 @@ import { getChaoticArray } from './test';
  */
 export default function countingSort(arr: number[]) {
   if (arr.length < 2) {
-    return [...arr];
+    return arr;
   }
 
   const counts: {positive: number, negative: number}[] = [];
@@ -29,10 +29,6 @@ export default function countingSort(arr: number[]) {
 
   const sorts: number[] = [];
   counts.forEach((value, i) => {
-    if (!value) {
-      return;
-    }
-
     while(value.positive > 0 || value.negative > 0) {
       if (value.positive > 0) {
         sorts.push(i);
