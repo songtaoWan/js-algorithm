@@ -1,7 +1,7 @@
 import { compare, getChaoticArray } from './test';
 
 /**
- * 归并排序，不改变原数组，返回新数组
+ * 归并排序，不改变原数组
  * @param arr 
  * @param compareFn 
  * @returns 
@@ -15,6 +15,7 @@ export default function mergeSort<T = unknown>(
     return arr;
   }
 
+  // 分割数组
   const middle = Math.floor(length / 2);
   const left = mergeSort(arr.slice(0, middle), compareFn);
   const right = mergeSort(arr.slice(middle, length), compareFn);
@@ -25,6 +26,8 @@ export default function mergeSort<T = unknown>(
     compareFn: (a: T, b: T) => boolean
   ) => {
     const result: T[] = [];
+    // 因为leftArr和rightArr都是排好序的，所以只要leftArr的第一个值大于（小于）rightArr的最后一个值
+    // 则leftArr所有元素都大于（小于）rightArr的所有元素
     if (compareFn(leftArr[0], rightArr[rightArr.length - 1])) {
       return result.concat(rightArr, leftArr);
     }
@@ -32,6 +35,7 @@ export default function mergeSort<T = unknown>(
       return result.concat(leftArr, rightArr);
     }
 
+    // 将两个排好序的数组，按顺序插入新数组
     let i = 0;
     let j = 0;
     do {
