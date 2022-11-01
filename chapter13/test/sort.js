@@ -9,6 +9,34 @@ const compare = (a, b) => {
 };
 
 /**
+ * @description 获取伪随机数，可以指定范围
+ * @param {number} [min=0]
+ * @param {number} [max=65532]
+ * @returns {number}
+ */
+const getPseudoRandomNumber = (min = 0, max = 65532) => {
+  if (!Number.isInteger(min) || !Number.isInteger(max) || min === max) {
+    throw new Error('argument error');
+  }
+
+  if (min > max) {
+    const temp = min;
+    max = min;
+    min = temp;
+  }
+
+  try {
+    const arr = new Uint16Array(1);
+    const maxNum = 65532;
+
+    const randomNum = crypto.webcrypto.getRandomValues(arr)[0] / maxNum;
+    return Math.ceil(randomNum * (max - min) + min);
+  } catch (ex) {
+    console.error(ex.message);
+  }
+};
+
+/**
  * 生成一个没有重复元素乱序数组，如果最大值与最小值的差小于要求的数组长度，则最大值修改为最大值+长度
  * @param len 数组长度，默认 10
  * @param min 默认 10
@@ -32,13 +60,13 @@ const getChaoticArray = (len = 10, min = 10, max = 100) => {
 
   const arr = [];
   for (let i = 0; i < len; i++) {
-    do {
-      const randomNum = Math.floor(Math.random() * (max - min) + min);
-      if (!arr.includes(randomNum)) {
-        arr.push(randomNum);
-        break;
-      }
-    } while (true);
+    let value;
+    try {
+      value = getPseudoRandomNumber(min, max);
+    } catch(e) {
+      value = Math.floor(Math.random() * (max - min) + min);
+    }
+    arr.push(value);
   }
 
   return arr;
