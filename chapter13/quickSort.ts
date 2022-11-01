@@ -84,6 +84,7 @@ function quickSortPlus<T = unknown>(
     rightIdx: number,
     compareFn: (a: T, b: T) => boolean
   ) => {
+    // 当数组长度较小时，使用插入排序（在排序小数组有不错的性能）
     if (rightIdx - leftIdx < 20) {
       // 将数组的每一项与其前面的每一个元素比较
       for (let i = leftIdx; i <= rightIdx; i++) {
@@ -145,24 +146,23 @@ function quickSortPlus<T = unknown>(
   };
 
   quick(arr, 0, arr.length - 1, compareFn);
-
   return arr;
 }
 
-// const qarr = getChaoticArray(80000);
-// const qres = quickSort(qarr, compare);
+const qarr = getChaoticArray(30);
+const qres = quickSortPlus(qarr, compare);
 
-// console.log(qres);
+console.log(qres);
 
-for (let i = 0; i < 1; i++) {
-  const qarr = getChaoticArray(8000);
+// for (let i = 0; i < 1; i++) {
+//   const qarr = getChaoticArray(8000);
 
-  const arr1 = JSON.parse(JSON.stringify(qarr));
-  console.time('quickSort: ')
-  quickSort(arr1, compare);
-  console.timeEnd('quickSort: ')
+//   const arr1 = JSON.parse(JSON.stringify(qarr));
+//   console.time('quickSort: ')
+//   quickSort(arr1, compare);
+//   console.timeEnd('quickSort: ')
   
-  console.time('plus: ')
-  quickSortPlus(qarr, compare);
-  console.timeEnd('plus: ')
-}
+//   console.time('plus: ')
+//   quickSortPlus(qarr, compare);
+//   console.timeEnd('plus: ')
+// }
