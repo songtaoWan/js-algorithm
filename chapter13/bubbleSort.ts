@@ -11,8 +11,8 @@ export default function bubbleSort<T = unknown>(
   compareFn: (a: T, b: T) => boolean
 ) {
   const length = arr.length;
-  if (!length) {
-    return [];
+  if (length < 2) {
+    return arr;
   }
 
   for (let i = 0; i < length - 1; i++) {
