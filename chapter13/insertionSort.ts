@@ -11,8 +11,8 @@ export default function insertionSort<T = unknown>(
   compareFn: (a: T, b: T) => boolean
 ) {
   const length = arr.length;
-  if (!length) {
-    return [];
+  if (length < 2) {
+    return arr;
   }
 
   // 将数组的每一项与其前面的每一个元素比较
