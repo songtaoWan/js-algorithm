@@ -35,7 +35,11 @@ const minCoinChange = (amount: number, coins = [1, 2, 5, 10, 20, 0.1, 0.5]) => {
       }
 
       // 值不为零且存在子拆分，并且子拆分加上当前面值小于存在的最小拆分结果
-      if (newAmount > 0 && childMins.length && (!mins.length || childMins.length < mins.length - 1)) {
+      if (
+        newAmount > 0 &&
+        childMins.length &&
+        (!mins.length || childMins.length < mins.length - 1)
+      ) {
         mins = [coin].concat(childMins);
       }
 
@@ -53,5 +57,28 @@ const minCoinChange = (amount: number, coins = [1, 2, 5, 10, 20, 0.1, 0.5]) => {
   return makeChange(amount);
 };
 
-const result = minCoinChange(23.1);
-console.log(result);
+/**
+ * 贪心算法解法：从最大面额开始，拿尽可能多。无法再拿时，开始拿第二大的，依次继续。
+ * 并不总是得到最优解，但简单、快速。
+ * @param amount
+ * @param coins
+ * @returns
+ */
+const minCoinChangeGreedy = (amount: number, coins = [1, 2, 5, 10, 20]) => {
+  const results: number[] = [];
+  let total = 0;
+
+  for (let i = coins.length - 1; i >= 0; i--) {
+    const coin = coins[i];
+
+    while (total + coin <= amount) {
+      total += coin;
+      results.push(coin);
+    }
+  }
+
+  return results;
+};
+
+const res = minCoinChangeGreedy(25);
+console.log(res);
